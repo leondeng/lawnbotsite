@@ -1,0 +1,4 @@
+services:
+#    fan_lawn_bot.example:
+#        class: Fan\LawnBotBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]

@@ -1,0 +1,51 @@
+#fan_lawn_bot_homepage:
+#    path:     /hello/{name}
+#    defaults: { _controller: FanLawnBotBundle:Default:index }
+
+create_lawn:
+    path:     /lawn
+    defaults: { _controller: FanLawnBotBundle:WebService:createLawn }
+    requirements:
+        _method:  POST
+
+get_lawn:
+    path:     /lawn/{id}
+    defaults: { _controller: FanLawnBotBundle:WebService:getLawn }
+    requirements:
+        _method:  GET
+
+delete_lawn:
+    path:     /lawn/{id}
+    defaults: { _controller: FanLawnBotBundle:WebService:deleteLawn }
+    requirements:
+        _method:  DELETE
+
+create_bot:
+    path:     /lawn/{id}/mower
+    defaults: { _controller: FanLawnBotBundle:WebService:createBot }
+    requirements:
+        _method:  POST
+
+get_bot:
+    path:     /lawn/{id}/mower/{mid}
+    defaults: { _controller: FanLawnBotBundle:WebService:getBot }
+    requirements:
+        _method:  GET
+
+update_bot:
+    path:     /lawn/{id}/mower/{mid}
+    defaults: { _controller: FanLawnBotBundle:WebService:updateBot }
+    requirements:
+        _method:  PUT
+
+delete_bot:
+    path:     /lawn/{id}/mower/{mid}
+    defaults: { _controller: FanLawnBotBundle:WebService:deleteBot }
+    requirements:
+        _method:  DELETE
+
+mow_lawn:
+    path:     /lawn/{id}/execute
+    defaults: { _controller: FanLawnBotBundle:WebService:mowLawn }
+    requirements:
+        _method:  POST
