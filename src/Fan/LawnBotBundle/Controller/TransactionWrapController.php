@@ -4,5 +4,5 @@ namespace Fan\LawnBotBundle\Controller;
 
 interface TransactionWrapController
 {
-  public function isTransactionWrapped();
+  public function needsRollback();
 }

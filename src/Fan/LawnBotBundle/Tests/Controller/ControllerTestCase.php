@@ -9,28 +9,7 @@ use Doctrine\Common\Inflector\Inflector;
 
 abstract class ControllerTestCase extends WebTestCase
 {
-  /**
-   *
-   * @var \Doctrine\ORM\EntityManager
-   */
-  //protected $em;
-
-  /**
-   * {@inheritDoc}
-   */
-  /*public function setUp() {
-    self::bootKernel();
-    $this->em = static::$kernel->getContainer()
-      ->get('doctrine')
-      ->getManager();
-
-    $this->em->beginTransaction();
-  }*/
-
   protected function tearDown() {
-//     $this->em->rollback();
-//     $this->em->close();
-
     $refl = new \ReflectionObject($this);
     foreach ( $refl->getProperties() as $prop ) {
       if (! $prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()

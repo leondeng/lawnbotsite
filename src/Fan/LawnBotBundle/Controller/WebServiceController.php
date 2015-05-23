@@ -12,7 +12,7 @@ use Fan\LawnBotBundle\Entity\Bot;
 class WebServiceController extends Controller implements TransactionWrapController
 {
 
-  public function isTransactionWrapped() {
+  public function needsRollback() {
     return 'test' == $this->container->get( 'kernel' )->getEnvironment();
   }
 

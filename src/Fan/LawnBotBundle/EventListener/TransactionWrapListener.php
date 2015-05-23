@@ -29,12 +29,12 @@ class TransactionWrapListener
     }
 
     if ($controller[0] instanceof TransactionWrapController) {
-      if ($controller[0]->isTransactionWrapped()) {
-        $this->em->beginTransaction();
+      $this->em->beginTransaction();
 
-        // mark the request as having wrapped transaction
-        $event->getRequest()->attributes->set('transaction_wrapped', true);
-      }
+      // mark the request as having wrapped transaction
+      $event->getRequest()->attributes->set('transaction_wrapped', true);
+
+      if ($controller[0]->needsRollback()) $event->getRequest()->attributes->set('rollback', true);
     }
   }
 
@@ -44,7 +44,9 @@ class TransactionWrapListener
         return;
     }
 
-    $this->em->rollback();
+    if ($event->getRequest()->attributes->get('rollback')) {
+      $this->em->rollback();
+    }
   }
 
 }
