@@ -4,15 +4,24 @@ namespace Fan\LawnBotBundle\Tests\Entity;
 
 use Fan\LawnBotBundle\Entity\Bot;
 
-class BotTest extends \PHPUnit_Framework_TestCase
+class BotTest extends EntityTestCase
 {
 
   public function testCreate() {
     $bot = $this->getBot();
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $bot);
-    $this->assertEquals(1, $bot->getX());
-    $this->assertEquals(2, $bot->getY());
-    $this->assertEquals('LMLMLMLMM', $bot->getCommand());
+    $this->em->persist($bot);
+    $this->em->flush();
+    
+    $botFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Bot')
+      ->findOneBy(array (
+      'command' => 'LMLMLMLMM' 
+    ));
+    
+    $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $botFromDb);
+    $this->assertEquals(1, $botFromDb->getX());
+    $this->assertEquals(2, $botFromDb->getY());
+    $this->assertEquals('LMLMLMLMM', $botFromDb->getCommand());
   }
 
   public function testCreateInvalidPosition() {
@@ -49,7 +58,7 @@ class BotTest extends \PHPUnit_Framework_TestCase
     $bot->setHeading('999');
   }
 
-  public function testtoString() {
+  public function testToString() {
     $bot = $this->getBot();
     $this->assertEquals('1 2 N', (string) $bot);
     

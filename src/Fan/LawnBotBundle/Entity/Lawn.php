@@ -36,7 +36,7 @@ class Lawn
   private $height;
   
   /**
-   * @ORM\OneToMany(targetEntity="Bot", mappedBy="lawn")
+   * @ORM\OneToMany(targetEntity="Bot", mappedBy="lawn", cascade={"persist"})
    */
   private $bots;
 

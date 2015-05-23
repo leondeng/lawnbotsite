@@ -5,15 +5,25 @@ namespace Fan\LawnBotBundle\Tests\Entity;
 use Fan\LawnBotBundle\Entity\Lawn;
 use Fan\LawnBotBundle\Entity\Bot;
 
-class LawnTest extends \PHPUnit_Framework_TestCase
+class LawnTest extends EntityTestCase
 {
 
   public function testCreate() {
     $lawn = $this->getLawn();
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Lawn', $lawn);
-    $this->assertEquals(5, $lawn->getWidth());
-    $this->assertEquals(5, $lawn->getHeight());
-    $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $lawn->getBots());
+    $this->em->persist($lawn);
+    $this->em->flush();
+    
+    $lawnFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Lawn')
+      ->findOneBy(array (
+      'width' => 5,
+      'height' => 5 
+    ));
+    $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Lawn', $lawnFromDb);
+    $this->assertEquals(5, $lawnFromDb->getWidth());
+    $this->assertEquals(5, $lawnFromDb->getHeight());
+    
+    $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $lawnFromDb->getBots());
   }
 
   public function testCreateInvalidSize() {
@@ -44,10 +54,26 @@ class LawnTest extends \PHPUnit_Framework_TestCase
 
   public function testAddBot() {
     $lawn = $this->getLawn();
-    $lawn->addBot($this->getBotA());
-    $lawn->addBot($this->getBotB());
+    $botA = $this->getBotA();
+    $botB = $this->getBotB();
+    $lawn->addBot($botA);
+    $lawn->addBot($botB);
     
-    $this->assertEquals(2, count($lawn->getBots()));
+    $this->em->persist($lawn);
+    // $this->em->persist($botA);
+    // $this->em->persist($botB);
+    $this->em->flush();
+    
+    $lawnFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Lawn')
+      ->findOneBy(array (
+      'width' => 5,
+      'height' => 5 
+    ));
+    
+    $this->assertEquals(2, count($lawnFromDb->getBots()));
+    foreach ( $lawnFromDb->getBots() as $bot ) {
+      $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $bot);
+    }
   }
 
   public function testRemovebot() {
