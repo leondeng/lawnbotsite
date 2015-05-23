@@ -4,6 +4,7 @@ php:
 install:
   - composer install
 before_script:
+  - mysql -e 'create database lawnbotsite_dev;'
   - composer test:rebuild-db
 script:
   - phpunit -c app
