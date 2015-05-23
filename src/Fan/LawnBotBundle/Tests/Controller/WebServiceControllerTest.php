@@ -10,10 +10,12 @@ class WebServiceControllerTest extends ControllerTestCase
   }
 
   /**
-   * @param array $url [$path, $route, $params, $ajax] url info
-   * @param unknown $auth_type
-   * @param unknown $data
-   * @param unknown $files
+   * @param string $method HTTP method
+   * @param string $uri URI
+   * @param array $parameters request parameters
+   * @param array $files files posted
+   * @param array $server server parameters
+   * @param string $content data posted
    * @param unknown $checks
    * @param unknown $test_id
    * @dataProvider webserviceAutomatedProvider

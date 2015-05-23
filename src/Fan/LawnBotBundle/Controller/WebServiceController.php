@@ -25,19 +25,19 @@ class WebServiceController extends Controller
     try {
       $size = json_decode($request->getContent(), true);
       $size = sprintf('%s %s', $size['width'], $size['height']);
-      
+
       $lawn = Lawn::create($size);
       $this->saveEntity($lawn);
-      
+
       $data = $lawn->__toArrayExclude(array (
-        'bots' 
+        'bots'
       ));
-      
+
       return new JsonResponse($data);
     } catch ( \Exception $e ) {
       $data = array (
         'error_code' => $e->getCode(),
-        'message' => $e->getMessage() 
+        'message' => $e->getMessage()
       );
       return new JsonResponse($data, 500);
     }
@@ -47,9 +47,9 @@ class WebServiceController extends Controller
     $id = $request->get('id');
     $data = array (
       'id' => 1,
-      'width' => 10 
+      'width' => 10
     );
-    
+
     return new JsonResponse($data);
   }
 

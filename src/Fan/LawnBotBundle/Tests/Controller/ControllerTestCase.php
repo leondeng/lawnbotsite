@@ -5,6 +5,7 @@ namespace Fan\LawnBotBundle\Tests\Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Fan\LawnBotBundle\Tests\TestConfiguration;
 use Symfony\Component\HttpFoundation\HeaderBag;
+use Doctrine\Common\Inflector\Inflector;
 
 abstract class ControllerTestCase extends WebTestCase
 {
@@ -12,18 +13,34 @@ abstract class ControllerTestCase extends WebTestCase
    *
    * @var \Doctrine\ORM\EntityManager
    */
-  protected $em;
+  //protected $em;
 
   /**
    * {@inheritDoc}
    */
-  public function setUp() {
+  /*public function setUp() {
     self::bootKernel();
     $this->em = static::$kernel->getContainer()
       ->get('doctrine')
       ->getManager();
 
     $this->em->beginTransaction();
+  }*/
+
+  protected function tearDown() {
+//     $this->em->rollback();
+//     $this->em->close();
+
+    $refl = new \ReflectionObject($this);
+    foreach ( $refl->getProperties() as $prop ) {
+      if (! $prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()
+        ->getName(), 'PHPUnit_')) {
+        $prop->setAccessible(true);
+        $prop->setValue($this, null);
+      }
+    }
+
+    parent::tearDown();
   }
 
   /**
@@ -36,7 +53,7 @@ abstract class ControllerTestCase extends WebTestCase
   protected function getConfig($key = null) {
     if (! isset($GLOBALS['test_configuration']) || ! isset($GLOBALS['test_configuration'][static::getConfigPrefix()])) {
       parse_str(implode('&', array_filter($GLOBALS['argv'], function ($i) {
-        return ! preg_match('/^(phpunit|[a-zA-Z]+Test|[\-]{2}[\-a-zA-Z]+|\w+\.xml)$/', basename($i));
+        return ! preg_match('/^(phpunit|-c|app|[a-zA-Z]+Test|[\-]{2}[\-a-zA-Z]+|\w+\.xml)$/', basename($i));
       })), $cli_config);
       $GLOBALS['test_configuration'] = TestConfiguration::getConfig(array (
         static::getConfigPrefix()
@@ -78,23 +95,6 @@ abstract class ControllerTestCase extends WebTestCase
       file_put_contents($settings['file'], $message . PHP_EOL, FILE_APPEND);
     }
   }
-
-  protected function tearDown() {
-    $this->em->rollback();
-    $this->em->close();
-
-    $refl = new \ReflectionObject($this);
-    foreach ( $refl->getProperties() as $prop ) {
-      if (! $prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()
-        ->getName(), 'PHPUnit_')) {
-        $prop->setAccessible(true);
-        $prop->setValue($this, null);
-      }
-    }
-
-    parent::tearDown();
-  }
-
 
   /**
    * Generate all test data packaged for controller
@@ -150,29 +150,23 @@ abstract class ControllerTestCase extends WebTestCase
   /**
    * Automatically generate a set of client call to test
    *
-   * @param string $method
-   *          HTTP method
-   * @param string $uri
-   *          URI
-   * @param array $parameters
-   *          request parameters
-   * @param array $files
-   *          files posted
-   * @param array $server
-   *          server parameters
-   * @param string $content
-   *          data posted
-   * @param array $checks
-   *          checks to perform
-   * @param string $test_id
-   *          label of test for debugging
+   * @param string $method HTTP method
+   * @param string $uri URI
+   * @param array $parameters request parameters
+   * @param array $files files posted
+   * @param array $server server parameters
+   * @param string $content data posted
+   * @param array $checks checks to perform
+   * @param string $test_id test id
    */
   protected function controllerAutomatedTest($method, $uri, $parameters, $files, $server, $content, $checks, $test_id) {
     $client = static::createClient();
 
+    $content = json_encode($content);
     $crawler = $client->request($method, $uri, $parameters, $files, $server, $content);
 
     $response = $client->getResponse();
+    $statuscode = $response->getStatusCode();
     $header = $response->headers;
     $body = $response->getContent();
     $this->log(strval($body), 6);
@@ -182,6 +176,7 @@ abstract class ControllerTestCase extends WebTestCase
         $this,
         'check' . Inflector::camelize($check_name)
       ), array (
+        $statuscode,
         $header,
         $body,
         $check_args
@@ -190,36 +185,38 @@ abstract class ControllerTestCase extends WebTestCase
   }
 
   /**
-   * checkHttpCode
+   * checkStatusCode
    *
    * verifies the response code matches the configured code
    *
+   * @param int $statuscode
    * @param HeaderBag $header
    * @param string $body
    * @param string $code
    */
-  protected function checkHttpCode($header, $body, $code = '200') {
-    $this->assertEquals((string)$code, (string)$header->get('status_code'), "HTTP Code is $code");
+  protected function checkStatusCode($statuscode, $header, $body, $code = 200) {
+    $this->assertEquals($code, $statuscode, "HTTP Code is $code");
   }
 
   /**
+   * @param int $statuscode
    * @param HeaderBag $header
    * @param string $body
    * @param string $regexp
    */
-  protected function checkHeaderRegexp($header, $body, $regexp) {
+  protected function checkHeaderRegexp($statuscode, $header, $body, $regexp) {
     if ($regexp) {
       $this->assertRegExp($regexp, $header, 'Response body matches Regexp');
     }
   }
 
   /**
-   * @todo more than JSON checks
+   * @param int $statuscode
    * @param HeaderBag $header
    * @param string $body
    * @param string $mimeType
    */
-  protected function checkContentType($curl, $header, $body, $mimeType) {
+  protected function checkContentType($statuscode, $header, $body, $mimeType) {
     $message = sprintf('Content type is valid (%s)', $mimeType);
 
     if (in_array($mimeType, array('json', 'application/json'))) {
@@ -228,11 +225,12 @@ abstract class ControllerTestCase extends WebTestCase
   }
 
   /**
+   * @param int $statuscode
    * @param HeaderBag $header
    * @param string $body
    * @param string $regexp
    */
-  protected function checkContentRegexp($header, $body, $regexp) {
+  protected function checkContentRegexp($statuscode, $header, $body, $regexp) {
     if ($regexp) {
       $this->assertRegExp($regexp, $body, 'Response body matches Regexp');
     }
@@ -245,7 +243,7 @@ abstract class ControllerTestCase extends WebTestCase
    * @param string $body
    * @param string $matchMap
    */
-  protected function checkContentDecoded($curl, $header, $body, $matchMap) {
+  protected function checkContentDecoded($statuscode, $header, $body, $matchMap) {
     $content = json_decode($body, true);
     $flat_content = $this->flattenArray((array) $content, '.', false);
 
