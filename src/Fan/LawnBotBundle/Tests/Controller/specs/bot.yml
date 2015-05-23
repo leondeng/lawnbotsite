@@ -1,0 +1,59 @@
+controller_actions:
+  actions:
+    -
+      test_id: bot_create/0
+      method: POST
+      uri: /lawn/{id}/mower
+      content: 
+        x: 3
+        y: 3
+        heading: S
+        command: LRMMRLMR
+      checks:
+        content_decoded:
+          x: 3
+          y: 3
+          heading: S
+          command: LRMMRLMR
+    -
+      test_id: bot_get/0
+      method: GET
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      checks:
+        content_decoded:
+          x: 3
+          y: 3
+          heading: S
+          command: LRMMRLMR
+    -
+      test_id: bot_update/0
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content: 
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_delete/0
+      method: DELETE
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      checks:
+        content_decoded:
+          status: ok
+

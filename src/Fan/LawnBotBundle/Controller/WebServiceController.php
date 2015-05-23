@@ -53,12 +53,12 @@ class WebServiceController extends Controller implements TransactionWrapControll
       $id = $request->get('id');
 
       if (!is_numeric($id)) {
-        throw new \Exception('Invalid get lawn request!', self::ERROR_CODE_BASE + 2);
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
       }
 
-     if ($lawn = $this->getDoctrine()->getManager()->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
-        $data = $lawn->__toArray();
-        return new JsonResponse($data);
+      $em = $this->getDoctrine()->getManager();
+      if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
+        return new JsonResponse($lawn->__toArray());
       } else {
         $data = array(
           'message' => 'Lawn not found!'
@@ -75,32 +75,52 @@ class WebServiceController extends Controller implements TransactionWrapControll
   }
 
   public function deleteLawnAction() {
-    return $this->render('FanLawnBotBundle:WebService:deleteLawn.html.twig', array ());
-    // ...
+    try {
+      $id = $request->get('id');
+
+      if (! is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($lawn);
+        $em->flush();
+
+        return new JsonResponse(array('status' => 'ok'));
+      } else {
+        $data = array(
+          'message' => 'Lawn not found!'
+        );
+        return new JsonResponse($data, 404);
+      }
+    } catch ( \Exception $e ) {
+      $data = array (
+        'error_code' => $e->getCode(),
+        'message' => $e->getMessage()
+      );
+      return new JsonResponse($data, 500);
+    }
   }
 
   public function createBotAction($id) {
-    return $this->render('FanLawnBotBundle:WebService:createBot.html.twig', array ());
-    // ...
+
   }
 
   public function getBotAction($id, $mid) {
-    return $this->render('FanLawnBotBundle:WebService:getBot.html.twig', array ());
-    // ...
+
   }
 
   public function updateBotAction($id, $mid) {
-    return $this->render('FanLawnBotBundle:WebService:updateBot.html.twig', array ());
-    // ...
+
   }
 
   public function deleteBotAction($id, $mid) {
-    return $this->render('FanLawnBotBundle:WebService:deleteBot.html.twig', array ());
-    // ...
+
   }
 
   public function mowLawnAction($id) {
-    return $this->render('FanLawnBotBundle:WebService:mowLawn.html.twig', array ());
-    // ...
+
   }
 }

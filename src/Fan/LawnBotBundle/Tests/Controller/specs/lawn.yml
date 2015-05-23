@@ -70,7 +70,7 @@ controller_actions:
         content_decoded:
           message: Lawn not found!
     -
-      test_id: lawn_get/1
+      test_id: lawn_get/2
       method: GET
       uri: /lawn/{id}
       parameters:
@@ -79,4 +79,41 @@ controller_actions:
         status_code: 500
         content_decoded:
           error_code: 902
-          message: Invalid get lawn request!
+          message: Invalid lawn id!
+    -
+      test_id: lawn_delete/0
+      method: DELETE
+      uri: /lawn/{id}
+      parameters:
+        id: 1
+      checks:
+        content_decoded:
+          status: ok
+    -
+      test_id: lawn_execute/0
+      method: POST
+      uri: /lawn/{id}/execute
+      parameters:
+        id: 1
+      checks:
+        content_decoded:
+          width: 5
+          height: 5
+          bots:
+            -
+              id: 1
+              x: 1
+              y: 3
+              heading: E
+              command: XXXXXXX
+            -
+              id: 2
+              x: 1
+              y: 3
+              heading: E
+              command: XXXXXXX
+            
+            
+            
+            
+            -

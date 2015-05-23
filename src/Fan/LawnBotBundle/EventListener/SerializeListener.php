@@ -10,6 +10,10 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
+/*
+ * @TODO: better to use @ParameterConvert for this?
+ */
+
 class SerializeListener
 {
   private $encoders;
@@ -20,18 +24,18 @@ class SerializeListener
   public function __construct() {
     $this->encoders = array (
       new XmlEncoder(),
-      new JsonEncoder() 
+      new JsonEncoder()
     );
     $this->normalizers = array (
-      new GetSetMethodNormalizer() 
+      new GetSetMethodNormalizer()
     );
-    
+
     $this->serializer = new Serializer($this->normalizers, $this->encoders);
   }
 
   public function onKernelController(FilterControllerEvent $event) {
     $controller = $event->getController();
-    
+
     /*
      * $controller passed can be either a class or a Closure.
      * This is not usual in Symfony but it may happen.
@@ -40,10 +44,10 @@ class SerializeListener
     if (! is_array($controller)) {
       return;
     }
-    
+
     if ($controller[0] instanceof SerializeController) {
       $controller[0]->setSal($this);
-      
+
       if ($content = $event->getRequest()
         ->getContent()) {
         $this->requestContent = $this->serializer->decode($content, 'json');
