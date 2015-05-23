@@ -13,6 +13,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Lawn
 {
+  const ERROR_CODE_BASE = 100;
+  
   use \Fan\LawnBotBundle\Traits\Accessor;
   
   /**
@@ -43,7 +45,7 @@ class Lawn
   public function __construct($size) {
     $params = explode(' ', $size);
     if (count($params) !== 2) {
-      throw new \InvalidArgumentException('Invalid size string!');
+      throw new \InvalidArgumentException('Invalid size string!', self::ERROR_CODE_BASE + 1);
     }
     
     $this->initialize($params);
@@ -79,7 +81,7 @@ class Lawn
    */
   public function setWidth($width) {
     if (! is_numeric($width)) {
-      throw new \InvalidArgumentException('Invalid width!');
+      throw new \InvalidArgumentException('Invalid width!', self::ERROR_CODE_BASE + 2);
     }
     
     $this->width = $width;
@@ -104,7 +106,7 @@ class Lawn
    */
   public function setHeight($height) {
     if (! is_numeric($height)) {
-      throw new \InvalidArgumentException('Invalid height!');
+      throw new \InvalidArgumentException('Invalid height!', self::ERROR_CODE_BASE + 3);
     }
     
     $this->height = $height;
@@ -136,19 +138,19 @@ class Lawn
 
   private function validateBot(Bot $bot) {
     if ($bot->getX() > $this->width) {
-      throw new \Exception('Invalid x postion of bot, out of width of lawn!');
+      throw new \Exception('Invalid x postion of bot, out of width of lawn!', self::ERROR_CODE_BASE + 4);
     }
     
     if ($bot->getY() > $this->height) {
-      throw new \Exception('Invalid y postion of bot, out of height of lawn!');
+      throw new \Exception('Invalid y postion of bot, out of height of lawn!', self::ERROR_CODE_BASE + 5);
     }
     
     if ($this->detectOverStep($bot)) {
-      throw new \Exception('Bad command of bot, overstep of boundary detected!');
+      throw new \Exception('Bad command of bot, overstep of boundary detected!', self::ERROR_CODE_BASE + 6);
     }
     
     if ($this->detectCollision($bot)) { // this bot route bump into any other existing bot, or run over any other existing bot
-      throw new \Exception('Bad command of bot, bots collision detected!');
+      throw new \Exception('Bad command of bot, bots collision detected!', self::ERROR_CODE_BASE + 7);
     }
     
     return true;

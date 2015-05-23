@@ -6,6 +6,33 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WebServiceControllerTest extends WebTestCase
 {
+  /**
+   *
+   * @var \Doctrine\ORM\EntityManager
+   */
+  protected $em;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function setUp() {
+    self::bootKernel();
+    $this->em = static::$kernel->getContainer()
+      ->get('doctrine')
+      ->getManager();
+    
+    $this->em->beginTransaction();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  protected function tearDown() {
+    $this->em->rollback();
+    
+    parent::tearDown();
+    $this->em->close();
+  }
 
   public function testCreatelawn() {
     $client = static::createClient();
@@ -13,6 +40,14 @@ class WebServiceControllerTest extends WebTestCase
     $crawler = $client->request('POST', '/lawn', array (), array (), array (
       'CONTENT_TYPE' => 'application/json' 
     ), '{"width":"5", "height":"5"}');
+    
+    $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'application/json'));
+    $this->assertEquals('{"id":10,"width":"5","height":"5"}', $client->getResponse()
+      ->getContent());
+    
+    $crawler = $client->request('POST', '/lawn', array (), array (), array (
+      'CONTENT_TYPE' => 'application/json' 
+    ), '{"width":"invalid", "height":"invalid"}');
     
     $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'application/json'));
     $this->assertEquals('{"width":"5", "height":"5"}', $client->getResponse()

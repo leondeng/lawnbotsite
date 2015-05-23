@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Bot
 {
   use \Fan\LawnBotBundle\Traits\Accessor;
+  const ERROR_CODE_BASE = 200;
   private static $headings = array (
     'W' => 'N',
     'N' => 'E',
@@ -70,7 +71,7 @@ class Bot
   public function __construct($position) {
     $params = explode(' ', $position);
     if (count($params) !== 3) {
-      throw new \InvalidArgumentException('Invalid position string!');
+      throw new \InvalidArgumentException('Invalid position string!', self::ERROR_CODE_BASE + 1);
     }
     
     $this->initialize($params);
@@ -99,7 +100,7 @@ class Bot
    */
   public function setX($x) {
     if (! is_numeric($x)) {
-      throw new \InvalidArgumentException('Invalid x position!');
+      throw new \InvalidArgumentException('Invalid x position!', self::ERROR_CODE_BASE + 2);
     }
     
     $this->x = $x;
@@ -124,7 +125,7 @@ class Bot
    */
   public function setY($y) {
     if (! is_numeric($y)) {
-      throw new \InvalidArgumentException('Invalid y position!');
+      throw new \InvalidArgumentException('Invalid y position!', self::ERROR_CODE_BASE + 3);
     }
     
     $this->y = $y;
@@ -149,7 +150,7 @@ class Bot
    */
   public function setHeading($heading) {
     if (! in_array($heading, self::$headings)) {
-      throw new \InvalidArgumentException('Invalid heading!');
+      throw new \InvalidArgumentException('Invalid heading!', self::ERROR_CODE_BASE + 4);
     }
     
     $this->heading = $heading;
@@ -174,7 +175,7 @@ class Bot
    */
   public function setCommand($command) {
     if (! preg_match('/^[LRM]+$/', $command)) {
-      throw new \InvalidArgumentException('Invalid command string!');
+      throw new \InvalidArgumentException('Invalid command string!', self::ERROR_CODE_BASE + 5);
     }
     
     $this->command = $command;

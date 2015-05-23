@@ -8,15 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Symfony\Component\HttpFoundation;
 use Fan\LawnBotBundle\Entity\Lawn;
 use Fan\LawnBotBundle\Entity\Bot;
-use Fan\LawnBotBundle\EventListener\SerializeListener;
 
-class WebServiceController extends Controller implements SerializeController
+class WebServiceController extends Controller
 {
-  private $sal;
-
-  public function setSal(SerializeListener $sal) {
-    $this->sal = $sal;
-  }
 
   private function saveEntity($object) {
     $this->getDoctrine()
@@ -28,16 +22,25 @@ class WebServiceController extends Controller implements SerializeController
   }
 
   public function createLawnAction(Request $request) {
-    $size = $this->sal->getRequestContent();
-    $size = sprintf('%d %d', $size['width'], $size['height']);
-    
-    $lawn = Lawn::create($size);
-    $this->saveEntity($lawn);
-    
-    $data = $this->sal->normalize($lawn);
-    var_dump($data);
-    
-    return new JsonResponse($data);
+    try {
+      $size = json_decode($request->getContent(), true);
+      $size = sprintf('%s %s', $size['width'], $size['height']);
+      
+      $lawn = Lawn::create($size);
+      $this->saveEntity($lawn);
+      
+      $data = $lawn->__toArrayExclude(array (
+        'bots' 
+      ));
+      
+      return new JsonResponse($data);
+    } catch ( \Exception $e ) {
+      $data = array (
+        'error_code' => $e->getCode(),
+        'message' => $e->getMessage() 
+      );
+      return new JsonResponse($data, 500);
+    }
   }
 
   public function getLawnAction(Request $request) {
