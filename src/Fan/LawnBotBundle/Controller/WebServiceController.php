@@ -26,7 +26,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
     try {
       $size = json_decode($request->getContent(), true);
       if (count($size) != 2 || !isset($size['width']) || !isset($size['height'])) {
-        throw new \Exception('Invalid create lawn request!', self::ERROR_CODE_BASE + 1);
+        throw new \Exception('Invalid lawn data!', self::ERROR_CODE_BASE + 1);
       }
 
       $size = sprintf('%s %s', $size['width'], $size['height']);
@@ -42,9 +42,9 @@ class WebServiceController extends Controller implements TransactionWrapControll
     }
   }
 
-  public function getLawnAction(Request $request) {
+  public function getLawnAction($id) {
     try {
-      $id = $request->get('id');
+      //$id = $request->get('id');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -61,9 +61,9 @@ class WebServiceController extends Controller implements TransactionWrapControll
     }
   }
 
-  public function deleteLawnAction() {
+  public function deleteLawnAction($id) {
     try {
-      $id = $request->get('id');
+      //$id = $request->get('id');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -84,24 +84,51 @@ class WebServiceController extends Controller implements TransactionWrapControll
     }
   }
 
-  public function createBotAction($id) {
+  public function createBotAction(Request $request) {
+    try {
+      $id = $request->get('id');
+
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
+        $data = json_decode($request->getContent(), true);
+        if (count($size) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
+          throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
+        }
+        $position = sprintf('%s %s %s', $data['x'], $data['y'], $data['heading']);
+        $command = $data['command'];
+        $bot = Bot::create($postion, $command);
+
+        $lawn->addBot($bot);
+        $this->saveEntity($lawn);
+
+        return new JsonResponse($bot->__toArray());
+      } else {
+        return $this->err404('Lawn not found!');
+      }
+    } catch ( \Exception $e ) {
+      return $this->err500($e);
+    }
 
   }
 
   public function getBotAction($id, $mid) {
-
+    return $this->err404('Not implemented!');
   }
 
-  public function updateBotAction($id, $mid) {
-
+  public function updateBotAction($id, $mid, Request $request) {
+    return $this->err404('Not implemented!');
   }
 
   public function deleteBotAction($id, $mid) {
-
+    return $this->err404('Not implemented!');
   }
 
   public function mowLawnAction($id) {
-
+    return $this->err404('Not implemented!');
   }
 
   private function err400($msg) {

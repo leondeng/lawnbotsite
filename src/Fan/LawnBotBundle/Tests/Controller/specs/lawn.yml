@@ -23,7 +23,7 @@ controller_actions:
         status_code: 500
         content_decoded:
           error_code: 901
-          message: Invalid create lawn request!
+          message: Invalid lawn data!
     -
       test_id: lawn_create/2
       method: POST
