@@ -9,16 +9,16 @@ use Symfony\Component\HttpFoundation\Symfony\Component\HttpFoundation;
 use Fan\LawnBotBundle\Entity\Lawn;
 use Fan\LawnBotBundle\Entity\Bot;
 
-class WebServiceController extends Controller
+class WebServiceController extends Controller implements TransactionWrapController
 {
 
+  public function isTransactionWrapped() {
+    return 'test' == $this->container->get( 'kernel' )->getEnvironment();
+  }
+
   private function saveEntity($object) {
-    $this->getDoctrine()
-      ->getManager()
-      ->persist($object);
-    $this->getDoctrine()
-      ->getManager()
-      ->flush();
+    $this->getDoctrine()->getManager()->persist($object);
+    $this->getDoctrine()->getManager()->flush();
   }
 
   public function createLawnAction(Request $request) {
