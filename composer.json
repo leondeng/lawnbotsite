@@ -47,8 +47,14 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
+        "dev:rebuild-db": [
+            "mysql -e 'CREATE DATABASE IF NOT EXISTS lawnbotsite_dev;' -uroot",
+            "php app/console -e=dev doctrine:schema:drop --force",
+            "php app/console -e=dev doctrine:schema:create",
+            "php app/console -e=dev fan:load-fixtures"
+        ],
         "test:rebuild-db": [
-            "php app/console doctrine:query:sql 'CREATE DATABASE IF NOT EXISTS lawnbotsite_test;'",
+            "mysql -e 'CREATE DATABASE IF NOT EXISTS lawnbotsite_test;' -uroot",
             "php app/console -e=test doctrine:schema:drop --force",
             "php app/console -e=test doctrine:schema:create",
             "php app/console -e=test fan:load-fixtures"
