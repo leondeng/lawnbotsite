@@ -34,17 +34,11 @@ class WebServiceController extends Controller implements TransactionWrapControll
       $lawn = Lawn::create($size);
       $this->saveEntity($lawn);
 
-      $data = $lawn->__toArrayExclude(array (
-        'bots'
-      ));
+      $data = $lawn->__toArrayExclude(array('bots'));
 
       return new JsonResponse($data);
     } catch ( \Exception $e ) {
-      $data = array (
-        'error_code' => $e->getCode(),
-        'message' => $e->getMessage()
-      );
-      return new JsonResponse($data, 500);
+      return $this->err500($e);
     }
   }
 
@@ -60,17 +54,10 @@ class WebServiceController extends Controller implements TransactionWrapControll
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
         return new JsonResponse($lawn->__toArray());
       } else {
-        $data = array(
-          'message' => 'Lawn not found!'
-        );
-        return new JsonResponse($data, 404);
-      }
+        return $this->err404('Lawn not found!');
+     }
     } catch (\Exception $e) {
-      $data = array (
-        'error_code' => $e->getCode(),
-        'message' => $e->getMessage()
-      );
-      return new JsonResponse($data, 500);
+      return $this->err500($e);
     }
   }
 
@@ -78,7 +65,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
     try {
       $id = $request->get('id');
 
-      if (! is_numeric($id)) {
+      if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
       }
 
@@ -90,17 +77,10 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
         return new JsonResponse(array('status' => 'ok'));
       } else {
-        $data = array(
-          'message' => 'Lawn not found!'
-        );
-        return new JsonResponse($data, 404);
+        return $this->err404('Lawn not found!');
       }
     } catch ( \Exception $e ) {
-      $data = array (
-        'error_code' => $e->getCode(),
-        'message' => $e->getMessage()
-      );
-      return new JsonResponse($data, 500);
+      return $this->err500($e);
     }
   }
 
@@ -122,5 +102,26 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
   public function mowLawnAction($id) {
 
+  }
+
+  private function err400($msg) {
+    return new JsonResponse(array('message' => $msg), 400);
+  }
+
+  private function err401($msg) {
+    return new JsonResponse(array('message' => $msg), 401);
+  }
+
+  private function err404($msg) {
+    return new JsonResponse(array('message' => $msg), 404);
+  }
+
+  private function err500(\Exception $e) {
+    $data = array (
+      'error_code' => $e->getCode(),
+      'message' => $e->getMessage()
+    );
+
+    return new JsonResponse($data, 500);
   }
 }
