@@ -12,6 +12,7 @@
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.2",
+        "doctrine/data-fixtures": "dev-master",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
@@ -49,7 +50,8 @@
         "test:rebuild-db": [
             "php app/console doctrine:query:sql 'CREATE DATABASE IF NOT EXISTS lawnbotsite_test;'",
             "php app/console -e=test doctrine:schema:drop --force",
-            "php app/console -e=test doctrine:schema:create"
+            "php app/console -e=test doctrine:schema:create",
+            "php app/console -e=test fan:load-fixtures"
         ]
     },
     "config": {
