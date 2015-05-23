@@ -42,9 +42,9 @@ class WebServiceController extends Controller implements TransactionWrapControll
     }
   }
 
-  public function getLawnAction($id) {
+  public function getLawnAction(Request $request) {
     try {
-      //$id = $request->get('id');
+      $id = $request->get('id');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -61,9 +61,9 @@ class WebServiceController extends Controller implements TransactionWrapControll
     }
   }
 
-  public function deleteLawnAction($id) {
+  public function deleteLawnAction(Request $request) {
     try {
-      //$id = $request->get('id');
+      $id = $request->request->get('id');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -115,19 +115,19 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
   }
 
-  public function getBotAction($id, $mid) {
+  public function getBotAction(Request $request) {
     return $this->err404('Not implemented!');
   }
 
-  public function updateBotAction($id, $mid, Request $request) {
+  public function updateBotAction(Request $request) {
     return $this->err404('Not implemented!');
   }
 
-  public function deleteBotAction($id, $mid) {
+  public function deleteBotAction(Request $request) {
     return $this->err404('Not implemented!');
   }
 
-  public function mowLawnAction($id) {
+  public function mowLawnAction(Request $request) {
     return $this->err404('Not implemented!');
   }
 

@@ -90,6 +90,27 @@ controller_actions:
         content_decoded:
           status: ok
     -
+      test_id: lawn_delete/1
+      method: DELETE
+      uri: /lawn/{id}
+      parameters:
+        id: 99999
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Lawn not found!
+    -
+      test_id: lawn_delete/2
+      method: DELETE
+      uri: /lawn/{id}
+      parameters:
+        id: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 902
+          message: Invalid lawn id!
+    -
       test_id: lawn_execute/0
       method: POST
       uri: /lawn/{id}/execute
@@ -112,8 +133,3 @@ controller_actions:
               y: 3
               heading: E
               command: XXXXXXX
-            
-            
-            
-            
-            -

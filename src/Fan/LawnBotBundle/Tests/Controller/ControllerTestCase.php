@@ -142,6 +142,8 @@ abstract class ControllerTestCase extends WebTestCase
     $client = static::createClient();
 
     $content = json_encode($content);
+    $this->log(sprintf('Sending request data "%s"', $content), 2);
+
     $crawler = $client->request($method, $uri, $parameters, $files, $server, $content);
 
     $response = $client->getResponse();
