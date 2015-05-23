@@ -1,0 +1,13 @@
+controller_actions:
+  actions:
+    -
+      test_id: lawn_create/0
+      method: POST
+      uri: /lawn
+      content: 
+        width: 5
+        height: 5
+      checks:
+        content_decoded:
+          width: 5
+          height: 5
