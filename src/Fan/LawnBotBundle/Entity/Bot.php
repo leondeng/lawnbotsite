@@ -51,6 +51,13 @@ class Bot
    * @var string @ORM\Column(name="command", type="string", length=100)
    */
   private $command;
+  
+  /**
+   *
+   * @var Lawn @ORM\ManyToOne(targetEntity="Lawn", inversedBy="bots")
+   *      @ORM\JoinColumn(name="lawn_id", referencedColumnName="id", onDelete="CASCADE")
+   */
+  private $lawn;
   private $sequence = null;
 
   public static function create($postion, $command) {
@@ -182,6 +189,28 @@ class Bot
    */
   public function getCommand() {
     return $this->command;
+  }
+
+  /**
+   * Set lawn
+   *
+   * @param Lawn $lawn          
+   *
+   * @return Comment
+   */
+  public function setLawn(Lawn $lawn) {
+    $this->lawn = $lawn;
+    
+    return $this;
+  }
+
+  /**
+   * Get lawn
+   *
+   * @return Lawn
+   */
+  public function getLawn() {
+    return $this->lawn;
   }
 
   public function getSequence() {

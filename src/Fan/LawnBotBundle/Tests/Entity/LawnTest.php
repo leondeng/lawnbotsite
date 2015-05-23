@@ -10,7 +10,7 @@ class LawnTest extends \PHPUnit_Framework_TestCase
 
   public function testCreate() {
     $lawn = $this->getLawn();
-    $this->assertInstanceOf('Fan\Lawnbots\Entity\Lawn', $lawn);
+    $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Lawn', $lawn);
     $this->assertEquals(5, $lawn->getWidth());
     $this->assertEquals(5, $lawn->getHeight());
     $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $lawn->getBots());
@@ -61,7 +61,7 @@ class LawnTest extends \PHPUnit_Framework_TestCase
     $bots = $lawn->getBots();
     $this->assertEquals(1, count($bots));
     $botOnLawn = $bots->first();
-    $this->assertInstanceOf('Fan\Lawnbots\Entity\Bot', $botOnLawn);
+    $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $botOnLawn);
     $this->assertEquals(3, $botOnLawn->getX());
     $this->assertEquals(3, $botOnLawn->getY());
     $this->assertEquals('MMRMMRMRRM', $botOnLawn->getCommand());
