@@ -6,13 +6,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Symfony\Component\HttpFoundation;
+use Fan\LawnBotBundle\Entity\Lawn;
+use Fan\LawnBotBundle\Entity\Bot;
+use Fan\LawnBotBundle\EventListener\SerializeListener;
 
-class WebServiceController extends Controller
+class WebServiceController extends Controller implements SerializeController
 {
+  private $sal;
 
-  public function createLawnAction() {
-    return $this->render('FanLawnBotBundle:WebService:createLawn.html.twig', array ());
-    // ...
+  public function setSal(SerializeListener $sal) {
+    $this->sal = $sal;
+  }
+
+  private function saveEntity($object) {
+    $this->getDoctrine()
+      ->getManager()
+      ->persist($object);
+    $this->getDoctrine()
+      ->getManager()
+      ->flush();
+  }
+
+  public function createLawnAction(Request $request) {
+    $size = $this->sal->getRequestContent();
+    $size = sprintf('%d %d', $size['width'], $size['height']);
+    
+    $lawn = Lawn::create($size);
+    $this->saveEntity($lawn);
+    
+    $data = $this->sal->normalize($lawn);
+    var_dump($data);
+    
+    return new JsonResponse($data);
   }
 
   public function getLawnAction(Request $request) {

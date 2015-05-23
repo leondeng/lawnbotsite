@@ -6,60 +6,58 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class WebServiceControllerTest extends WebTestCase
 {
-    public function testCreatelawn()
-    {
-        $client = static::createClient();
 
-        $crawler = $client->request('GET', '/lawn');
-    }
+  public function testCreatelawn() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('POST', '/lawn', array (), array (), array (
+      'CONTENT_TYPE' => 'application/json' 
+    ), '{"width":"5", "height":"5"}');
+    
+    $this->assertTrue($client->getResponse()->headers->contains('Content-Type', 'application/json'));
+    $this->assertEquals('{"width":"5", "height":"5"}', $client->getResponse()
+      ->getContent());
+  }
 
-    public function testGetlawn()
-    {
-        $client = static::createClient();
+  public function testGetlawn() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('GET', '/lawn');
+  }
 
-        $crawler = $client->request('GET', '/lawn');
-    }
+  public function testDeletelawn() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('DELETE', '/lawn');
+  }
 
-    public function testDeletelawn()
-    {
-        $client = static::createClient();
+  public function testCreatebot() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('POST', '/lawn/{id}/mower');
+  }
 
-        $crawler = $client->request('GET', '/lawn');
-    }
+  public function testGetbot() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('GET', '/lawn/{id}/mower/{mid}');
+  }
 
-    public function testCreatebot()
-    {
-        $client = static::createClient();
+  public function testUpdatebot() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('PUT', '/lawn/{id}/mower/{mid}');
+  }
 
-        $crawler = $client->request('GET', '/lawn/{id}/mower');
-    }
+  public function testDeletebot() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('DELETE', '/lawn/{id}/mower/{mid}');
+  }
 
-    public function testGetbot()
-    {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/lawn/{id}/mower/{mid}');
-    }
-
-    public function testUpdatebot()
-    {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/lawn/{id}/mower/{mid}');
-    }
-
-    public function testDeletebot()
-    {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/lawn/{id}/mower/{mid}');
-    }
-
-    public function testMowlawn()
-    {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/lawn/{id}/execute');
-    }
-
+  public function testMowlawn() {
+    $client = static::createClient();
+    
+    $crawler = $client->request('POST', '/lawn/{id}/execute');
+  }
 }
