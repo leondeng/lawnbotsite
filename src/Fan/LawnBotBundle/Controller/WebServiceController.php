@@ -11,6 +11,7 @@ use Fan\LawnBotBundle\Entity\Bot;
 
 class WebServiceController extends Controller implements TransactionWrapController
 {
+  const ERROR_CODE_BASE = 900;
 
   public function needsRollback() {
     return 'test' == $this->container->get( 'kernel' )->getEnvironment();
@@ -24,6 +25,10 @@ class WebServiceController extends Controller implements TransactionWrapControll
   public function createLawnAction(Request $request) {
     try {
       $size = json_decode($request->getContent(), true);
+      if (count($size) != 2 || !isset($size['width']) || !isset($size['height'])) {
+        throw new \Exception('Invalid create lawn request!', self::ERROR_CODE_BASE + 1);
+      }
+
       $size = sprintf('%s %s', $size['width'], $size['height']);
 
       $lawn = Lawn::create($size);
@@ -44,13 +49,29 @@ class WebServiceController extends Controller implements TransactionWrapControll
   }
 
   public function getLawnAction(Request $request) {
-    $id = $request->get('id');
-    $data = array (
-      'id' => 1,
-      'width' => 10
-    );
+    try {
+      $id = $request->get('id');
 
-    return new JsonResponse($data);
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid get lawn request!', self::ERROR_CODE_BASE + 2);
+      }
+
+     if ($lawn = $this->getDoctrine()->getManager()->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
+        $data = $lawn->__toArray();
+        return new JsonResponse($data);
+      } else {
+        $data = array(
+          'message' => 'Lawn not found!'
+        );
+        return new JsonResponse($data, 404);
+      }
+    } catch (\Exception $e) {
+      $data = array (
+        'error_code' => $e->getCode(),
+        'message' => $e->getMessage()
+      );
+      return new JsonResponse($data, 500);
+    }
   }
 
   public function deleteLawnAction() {

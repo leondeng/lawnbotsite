@@ -11,3 +11,72 @@ controller_actions:
         content_decoded:
           width: 5
           height: 5
+    -
+      test_id: lawn_create/1
+      method: POST
+      uri: /lawn
+      content: 
+        width: 5
+        height: 5
+        invalid: 5
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 901
+          message: Invalid create lawn request!
+    -
+      test_id: lawn_create/2
+      method: POST
+      uri: /lawn
+      content: 
+        width: invalid
+        height: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 102
+          message: Invalid width!
+    -
+      test_id: lawn_create/3
+      method: POST
+      uri: /lawn
+      content: 
+        width: 5
+        height: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 103
+          message: Invalid height!
+    -
+      test_id: lawn_get/0
+      method: GET
+      uri: /lawn/{id}
+      parameters:
+        id: 1
+      checks:
+        content_decoded:
+          id: 1
+          width: 5
+          height: 5
+    -
+      test_id: lawn_get/1
+      method: GET
+      uri: /lawn/{id}
+      parameters:
+        id: 99999
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Lawn not found!
+    -
+      test_id: lawn_get/1
+      method: GET
+      uri: /lawn/{id}
+      parameters:
+        id: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 902
+          message: Invalid get lawn request!
