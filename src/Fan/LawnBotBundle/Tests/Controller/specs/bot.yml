@@ -4,17 +4,179 @@ controller_actions:
       test_id: bot_create/0
       method: POST
       uri: /lawn/{id}/mower
-      content: 
+      parameters:
+        id: 1
+      content:
+        x: 2
+        y: 2
+        heading: N
+        command: MMMLMMLM
+      checks:
+        content_decoded:
+          x: 2
+          y: 2
+          heading: N
+          command: MMMLMMLM
+    -
+      test_id: bot_create/1
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 3
+        heading: S
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 911
+          message: Invalid bot data!
+    -
+      test_id: bot_create/2
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 3
+        heading: S
+        command: LRMMRLMR
+        invalid: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 911
+          message: Invalid bot data!
+    -
+      test_id: bot_create/3
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 7
+        y: 7
+        heading: S
+        command: LRMMRLMR
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 104
+          message: Invalid x postion of bot, out of width of lawn!
+    -
+      test_id: bot_create/4
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 7
+        heading: S
+        command: LRMMRLMR
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 105
+          message: Invalid y postion of bot, out of height of lawn!
+    -
+      test_id: bot_create/5
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 4
+        heading: M
+        command: LRMMRLMR
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 204
+          message: Invalid heading!
+    -
+      test_id: bot_create/6
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 4
+        heading: S
+        command: INVALID
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 205
+          message: Invalid command string!
+    -
+      test_id: bot_create/7
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
         x: 3
         y: 3
         heading: S
         command: LRMMRLMR
       checks:
+        status_code: 500
         content_decoded:
-          x: 3
-          y: 3
-          heading: S
-          command: LRMMRLMR
+          error_code: 123
+          message: Adding bot to non-empty location!
+    -
+      test_id: bot_create/8
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 3
+        y: 3
+        heading: S
+        command: LRMMRLMR
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 123
+          message: Adding bot to non-empty location!
+    -
+      test_id: bot_create/9
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 2
+        y: 2
+        heading: N
+        command: MMMMRLM
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 106
+          message: Bad command of bot, overstep of boundary detected!
+    -
+      test_id: bot_create/10
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 1
+      content:
+        x: 5
+        y: 0
+        heading: N
+        command: MMMLMM
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 107
+          message: Bad command of bot, bots collision detected!
     -
       test_id: bot_get/0
       method: GET
@@ -35,7 +197,7 @@ controller_actions:
       parameters:
         id: 1
         mid: 1
-      content: 
+      content:
         x: 2
         y: 4
         heading: N

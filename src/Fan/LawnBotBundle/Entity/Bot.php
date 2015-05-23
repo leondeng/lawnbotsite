@@ -13,14 +13,16 @@ use Doctrine\ORM\Mapping as ORM;
 class Bot
 {
   use \Fan\LawnBotBundle\Traits\Accessor;
+
   const ERROR_CODE_BASE = 200;
-  private static $headings = array (
+
+  protected static $headings = array (
     'W' => 'N',
     'N' => 'E',
     'E' => 'S',
-    'S' => 'W' 
+    'S' => 'W'
   );
-  
+
   /**
    *
    * @var integer @ORM\Column(name="id", type="integer")
@@ -28,43 +30,44 @@ class Bot
    *      @ORM\GeneratedValue(strategy="AUTO")
    */
   private $id;
-  
+
   /**
    *
    * @var integer @ORM\Column(name="x", type="integer", length=10)
    */
   private $x;
-  
+
   /**
    *
    * @var integer @ORM\Column(name="y", type="integer", length=10)
    */
   private $y;
-  
+
   /**
    *
    * @var char @ORM\Column(name="heading", type="string", length=1)
    */
   private $heading;
-  
+
   /**
    *
    * @var string @ORM\Column(name="command", type="string", length=100)
    */
   private $command;
-  
+
   /**
    *
    * @var Lawn @ORM\ManyToOne(targetEntity="Lawn", inversedBy="bots")
    *      @ORM\JoinColumn(name="lawn_id", referencedColumnName="id", onDelete="CASCADE")
    */
   private $lawn;
-  private $sequence = null;
 
-  public static function create($postion, $command) {
-    $bot = new Bot($postion);
+  protected $sequence = null;
+
+  public static function create($position, $command) {
+    $bot = new Bot($position);
     $bot->setCommand($command);
-    
+
     return $bot;
   }
 
@@ -73,7 +76,7 @@ class Bot
     if (count($params) !== 3) {
       throw new \InvalidArgumentException('Invalid position string!', self::ERROR_CODE_BASE + 1);
     }
-    
+
     $this->initialize($params);
   }
 
@@ -95,16 +98,16 @@ class Bot
   /**
    * Set x
    *
-   * @param integer $x          
+   * @param integer $x
    * @return Bot
    */
   public function setX($x) {
     if (! is_numeric($x)) {
       throw new \InvalidArgumentException('Invalid x position!', self::ERROR_CODE_BASE + 2);
     }
-    
+
     $this->x = $x;
-    
+
     return $this;
   }
 
@@ -120,16 +123,16 @@ class Bot
   /**
    * Set y
    *
-   * @param integer $y          
+   * @param integer $y
    * @return Bot
    */
   public function setY($y) {
     if (! is_numeric($y)) {
       throw new \InvalidArgumentException('Invalid y position!', self::ERROR_CODE_BASE + 3);
     }
-    
+
     $this->y = $y;
-    
+
     return $this;
   }
 
@@ -145,16 +148,16 @@ class Bot
   /**
    * Set heading
    *
-   * @param string $heading          
+   * @param string $heading
    * @return Bot
    */
   public function setHeading($heading) {
     if (! in_array($heading, self::$headings)) {
       throw new \InvalidArgumentException('Invalid heading!', self::ERROR_CODE_BASE + 4);
     }
-    
+
     $this->heading = $heading;
-    
+
     return $this;
   }
 
@@ -170,16 +173,16 @@ class Bot
   /**
    * Set command
    *
-   * @param string $command          
+   * @param string $command
    * @return Bot
    */
   public function setCommand($command) {
     if (! preg_match('/^[LRM]+$/', $command)) {
       throw new \InvalidArgumentException('Invalid command string!', self::ERROR_CODE_BASE + 5);
     }
-    
+
     $this->command = $command;
-    
+
     return $this;
   }
 
@@ -195,13 +198,13 @@ class Bot
   /**
    * Set lawn
    *
-   * @param Lawn $lawn          
+   * @param Lawn $lawn
    *
    * @return Comment
    */
   public function setLawn(Lawn $lawn) {
     $this->lawn = $lawn;
-    
+
     return $this;
   }
 
@@ -216,18 +219,18 @@ class Bot
 
   public function getSequence() {
     if ($this->sequence) return $this->sequence;
-    
+
     $sequence = array ();
     $sequence[] = array (
       'x' => $this->x,
       'y' => $this->y,
-      'heading' => $this->heading 
+      'heading' => $this->heading
     );
-    
+
     foreach ( str_split($this->command) as $action ) {
       $sequence[] = $this->getNextPosition(end($sequence), $action);
     }
-    
+
     return $this->sequence = $sequence;
   }
 
@@ -237,7 +240,7 @@ class Bot
     } else {
       $position = $this->getNextHeading($position, $action);
     }
-    
+
     return $position;
   }
 
@@ -248,7 +251,7 @@ class Bot
       $flip_headings = array_flip(self::$headings);
       $position['heading'] = $flip_headings[$position['heading']];
     }
-    
+
     return $position;
   }
 
@@ -267,15 +270,15 @@ class Bot
         $position['x'] --;
         break;
     }
-    
+
     return $position;
   }
 
   public function getFinalPosition() {
     $seq = $this->getSequence();
-    
+
     $position = end($seq);
-    
+
     return sprintf('%d %d %s', $position['x'], $position['y'], $position['heading']);
   }
 

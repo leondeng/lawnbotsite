@@ -13,7 +13,7 @@ trait Accessor
 
   public function set($property, $value) {
     $this->$property = $value;
-    
+
     return $this;
   }
 
@@ -22,17 +22,17 @@ trait Accessor
     try {
       if (in_array($verb = substr($method, 0, 3), array (
         'set',
-        'get' 
+        'get'
       ))) {
         $prop = Inflector::camelize(substr($method, 3));
-        
+
         $refl = new \ReflectionObject($this);
         if ($refl->hasProperty($prop)) {
           return call_user_func_array(array (
             $this,
-            $verb 
+            $verb
           ), array_merge(array (
-            $prop 
+            $prop
           ), $arguments));
         } else {
           throw new \Exception(sprintf('Unknown property %s::$%s!', get_class($this), $prop));
@@ -50,13 +50,13 @@ trait Accessor
   public function __toArrayExclude(array $exclude = array()) {
     $ret = array ();
     $refl = new \ReflectionObject($this);
-    foreach ( $refl->getProperties() as $reflp ) {
+    foreach ( $refl->getProperties(\ReflectionProperty::IS_PRIVATE) as $reflp ) {
       $prop = $reflp->getName();
       if (in_array($prop, $exclude)) continue;
-      
+
       $ret[$prop] = $this->$prop;
     }
-    
+
     return $ret;
   }
 }

@@ -86,7 +86,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
   public function createBotAction(Request $request) {
     try {
-      $id = $request->get('id');
+      $id = $request->request->get('id');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -95,17 +95,17 @@ class WebServiceController extends Controller implements TransactionWrapControll
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
         $data = json_decode($request->getContent(), true);
-        if (count($size) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
+        if (count($data) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
           throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
         }
         $position = sprintf('%s %s %s', $data['x'], $data['y'], $data['heading']);
         $command = $data['command'];
-        $bot = Bot::create($postion, $command);
+        $bot = Bot::create($position, $command);
 
         $lawn->addBot($bot);
         $this->saveEntity($lawn);
 
-        return new JsonResponse($bot->__toArray());
+        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
       } else {
         return $this->err404('Lawn not found!');
       }

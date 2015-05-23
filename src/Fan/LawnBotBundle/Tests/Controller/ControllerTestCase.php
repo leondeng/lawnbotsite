@@ -150,7 +150,7 @@ abstract class ControllerTestCase extends WebTestCase
     $statuscode = $response->getStatusCode();
     $header = $response->headers;
     $body = $response->getContent();
-    $this->log(strval($body), 6);
+    $this->log(sprintf('Received response data "%s"', strval($body)), 6);
 
     foreach ( array_filter((array) $checks) as $check_name => $check_args ) {
       call_user_func_array(array (
