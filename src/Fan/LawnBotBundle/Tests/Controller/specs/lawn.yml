@@ -61,20 +61,16 @@ controller_actions:
           id: 1
           width: 5
           height: 5
-          bots:
-            -
-              id: 1
-              x: 1
-              y: 3
-              heading: N
-              command: LMLMLMLMM
-            -
-              id: 2
-              x: 5
-              y: 1
-              heading: E
-              command: MMRMMRMRRM
-
+          bots.0.id: 1
+          bots.0.x: 1
+          bots.0.y: 2
+          bots.0.heading: N
+          bots.0.command: LMLMLMLMM
+          bots.1.id: 2
+          bots.1.x: 3
+          bots.1.y: 3
+          bots.1.heading: E
+          bots.1.command: MMRMMRMRRM
     -
       test_id: lawn_get/1
       method: GET
@@ -139,19 +135,16 @@ controller_actions:
           id: 1
           width: 5
           height: 5
-          bots:
-            -
-              id: 1
-              x: 1
-              y: 3
-              heading: N
-              command: LMLMLMLMM
-            -
-              id: 2
-              x: 5
-              y: 1
-              heading: E
-              command: MMRMMRMRRM
+          bots.0.id: 1
+          bots.0.x: 1
+          bots.0.y: 3
+          bots.0.heading: N
+          bots.0.command: LMLMLMLMM
+          bots.1.id: 2
+          bots.1.x: 5
+          bots.1.y: 1
+          bots.1.heading: E
+          bots.1.command: MMRMMRMRRM
     -
       test_id: lawn_execute/1
       method: POST

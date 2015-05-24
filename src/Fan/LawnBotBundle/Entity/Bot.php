@@ -3,12 +3,16 @@
 namespace Fan\LawnBotBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * Bot
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Fan\LawnBotBundle\Entity\BotRepository")
+ *
+ * @ExclusionPolicy("all")
  */
 class Bot
 {
@@ -16,42 +20,55 @@ class Bot
 
   const ERROR_CODE_BASE = 200;
 
-  protected static $headings = array (
+  const HEADINGS = [
     'W' => 'N',
     'N' => 'E',
     'E' => 'S',
     'S' => 'W'
-  );
+  ];
+
+  private $headings;
+  private $sequence = null;
 
   /**
    *
    * @var integer @ORM\Column(name="id", type="integer")
    *      @ORM\Id
    *      @ORM\GeneratedValue(strategy="AUTO")
+   *
+   *      @Expose
    */
   private $id;
 
   /**
    *
    * @var integer @ORM\Column(name="x", type="integer", length=10)
+   *
+   * @Expose
    */
   private $x;
 
   /**
    *
    * @var integer @ORM\Column(name="y", type="integer", length=10)
+   *
+   * @Expose
    */
   private $y;
 
   /**
    *
    * @var char @ORM\Column(name="heading", type="string", length=1)
+   *
+   * @Expose
    */
   private $heading;
 
   /**
    *
    * @var string @ORM\Column(name="command", type="string", length=100)
+   *
+   * @Expose
    */
   private $command;
 
@@ -61,8 +78,6 @@ class Bot
    *      @ORM\JoinColumn(name="lawn_id", referencedColumnName="id", onDelete="CASCADE")
    */
   private $lawn;
-
-  protected $sequence = null;
 
   public static function create($position, $command) {
     $bot = new Bot($position);
@@ -152,7 +167,7 @@ class Bot
    * @return Bot
    */
   public function setHeading($heading) {
-    if (! in_array($heading, self::$headings)) {
+    if (! in_array($heading, self::HEADINGS)) {
       throw new \InvalidArgumentException('Invalid heading!', self::ERROR_CODE_BASE + 4);
     }
 
@@ -246,9 +261,10 @@ class Bot
 
   private function getNextHeading($position, $direction) {
     if ($direction === 'R') {
-      $position['heading'] = self::$headings[$position['heading']];
+      $headings = self::HEADINGS;
+      $position['heading'] = $headings[$position['heading']];
     } else {
-      $flip_headings = array_flip(self::$headings);
+      $flip_headings = array_flip(self::HEADINGS);
       $position['heading'] = $flip_headings[$position['heading']];
     }
 

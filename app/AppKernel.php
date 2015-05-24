@@ -15,19 +15,20 @@ class AppKernel extends Kernel
       new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
       new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
       new AppBundle\AppBundle(),
-      new Fan\LawnBotBundle\FanLawnBotBundle() 
+      new JMS\SerializerBundle\JMSSerializerBundle(),
+      new Fan\LawnBotBundle\FanLawnBotBundle()
     );
-    
+
     if (in_array($this->getEnvironment(), array (
       'dev',
-      'test' 
+      'test'
     ))) {
       $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
       $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
       $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
       $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
     }
-    
+
     return $bundles;
   }
 

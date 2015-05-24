@@ -149,7 +149,7 @@ class TestConfiguration implements ConfigurationInterface
               ->defaultValue(array())
             ->end()
             ->variableNode('server')
-              ->defaultValue(array('CONTENT_TYPE' => 'application/json'))
+              ->defaultValue(array('Content-Type' => 'application/json'))
             ->end()
             ->variableNode('content')
               ->defaultValue(array())

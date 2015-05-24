@@ -5,6 +5,7 @@ namespace Fan\LawnBotBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Symfony\Component\HttpFoundation;
 use Fan\LawnBotBundle\Entity\Lawn;
 use Fan\LawnBotBundle\Entity\Bot;
@@ -52,7 +53,10 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
-        return new JsonResponse($lawn->__toArray());
+        $serializer = $this->container->get('jms_serializer');
+        $data = $serializer->serialize($lawn, 'json');
+
+        return $this->responseJson($data);
       } else {
         return $this->err404('Lawn not found!');
      }
@@ -211,16 +215,23 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
-        $lawn->mowMe(); //print_r($lawn->__toArrayIncludeOnly(array('id', 'width', 'height', 'bots'))); die();
+        $lawn->mowMe();
         $this->saveEntity($lawn);
 
-        return new JsonResponse($lawn->__toArray());
+        $serializer = $this->container->get('jms_serializer');
+        $data = $serializer->serialize($lawn, 'json');
+
+        return $this->responseJson($data);
       } else {
         return $this->err404('Lawn not found!');
      }
     } catch (\Exception $e) {
       return $this->err500($e);
     }
+  }
+
+  private function responseJson($data) {
+    return new Response($data, 200, array('Content-Type' => 'application/json'));
   }
 
   private function err400($msg) {
