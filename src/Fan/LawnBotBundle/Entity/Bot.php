@@ -29,6 +29,8 @@ class Bot
 
   private $sequence = null;
 
+  private $started = false;
+
   /**
    *
    * @var integer @ORM\Column(name="id", type="integer")
@@ -319,6 +321,54 @@ class Bot
     $this->command = null;
     $this->sequence = null;
     // $this->lawn = null;
+  }
+
+  public function nextCoord() {
+    return $this->getNextCoordinates($this->getCurrentPosition());
+  }
+
+  public function turn($width, $height) {
+    // turn right first
+    $direction = 'R';
+
+    // see if heading overstep, turn opposite
+    $cur_pos = $this->getCurrentPosition();
+    $new_heading = $this->getNextHeading($cur_pos, $direction);
+    $new_pos = array(
+      'x' => $cur_pos['x'],
+      'y' => $cur_pos['y'],
+      'heading' => $new_heading['heading']
+    );
+    $pos_in_q = $this->getNextPosition($new_pos, 'M');
+
+    if (// overstep
+       $pos_in_q['x'] < 0 ||
+       $pos_in_q['y'] < 0 ||
+       $pos_in_q['x'] > $width ||
+       $pos_in_q['y'] > $height)
+    {
+       $direction = 'L';
+       $new_heading = $this->getNextHeading($cur_pos, $direction);
+       $new_pos = array(
+         'x' => $cur_pos['x'],
+         'y' => $cur_pos['y'],
+         'heading' => $new_heading['heading']
+       );
+    }
+    $this->update(array_merge($new_pos, $this->updateCommand($direction)));
+  }
+
+  public function move() {
+    $this->update(array_merge($this->getNextPosition($this->getCurrentPosition(), 'M'), $this->updateCommand()));
+  }
+
+  private function updateCommand($action = 'M') {
+    if ($this->started) {
+      return array('command' => $this->command.$action);
+    } else {
+      $this->started = true;
+      return array('command' => $action);
+    }
   }
 
   public function __toString() {

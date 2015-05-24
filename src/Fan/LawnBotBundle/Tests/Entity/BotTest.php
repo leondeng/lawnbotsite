@@ -12,12 +12,12 @@ class BotTest extends EntityTestCase
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $bot);
     $this->em->persist($bot);
     $this->em->flush();
-    
+
     $botFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Bot')
       ->findOneBy(array (
-      'command' => 'LMLMLMLMM' 
+      'command' => 'LMLMLMLMM'
     ));
-    
+
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $botFromDb);
     $this->assertEquals(1, $botFromDb->getX());
     $this->assertEquals(2, $botFromDb->getY());
@@ -32,6 +32,11 @@ class BotTest extends EntityTestCase
   public function testCreateInvalidCommand() {
     $this->setExpectedException('InvalidArgumentException', 'Invalid command string!');
     $bot = Bot::create('2 3 S', 'sjfewpnfe21');
+  }
+
+  public function testCreateEmptyCommand() {
+    $this->setExpectedException('InvalidArgumentException', 'Invalid command string!');
+    $bot = Bot::create('2 3 S', '');
   }
 
   public function testUnknowProperty() {
@@ -61,7 +66,7 @@ class BotTest extends EntityTestCase
   public function testToString() {
     $bot = $this->getBot();
     $this->assertEquals('1 2 N', (string) $bot);
-    
+
     $bot->setX(3);
     $bot->setY(5);
     $bot->setHeading('W');
@@ -71,7 +76,7 @@ class BotTest extends EntityTestCase
   public function testFinalPosition() {
     $bot = $this->getBot();
     $this->assertEquals('1 3 N', $bot->getFinalPosition());
-    
+
     $bot->reset();
     $bot->setX(3);
     $bot->setY(3);
@@ -82,7 +87,7 @@ class BotTest extends EntityTestCase
 
   public function getBot() {
     $bot = Bot::create('1 2 N', 'LMLMLMLMM');
-    
+
     return $bot;
   }
 }
