@@ -71,7 +71,6 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
-        $em = $this->getDoctrine()->getManager();
         $em->remove($lawn);
         $em->flush();
 
@@ -112,7 +111,6 @@ class WebServiceController extends Controller implements TransactionWrapControll
     } catch ( \Exception $e ) {
       return $this->err500($e);
     }
-
   }
 
   public function getBotAction(Request $request) {
@@ -140,11 +138,67 @@ class WebServiceController extends Controller implements TransactionWrapControll
   }
 
   public function updateBotAction(Request $request) {
-    return $this->err404('Not implemented!');
+    try {
+      $id = $request->get('id');
+      $mid = $request->get('mid');
+
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      if (!is_numeric($mid)) {
+        throw new \Exception('Invalid bot id!', self::ERROR_CODE_BASE + 3);
+      }
+
+      $data = json_decode($request->getContent(), true);
+      if (count($data) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
+        throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
+        $bot->setX($data['x']);
+        $bot->setY($data['y']);
+        $bot->setHeading($data['heading']);
+        $bot->setCommand($data['command']);
+        $this->saveEntity($bot);
+
+        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
+      } else {
+        return $this->err404('Bot not found!');
+      }
+    } catch ( \Exception $e ) {
+      return $this->err500($e);
+    }
   }
 
   public function deleteBotAction(Request $request) {
-    return $this->err404('Not implemented!');
+    try {
+      $id = $request->request->get('id');
+      $mid = $request->request->get('mid');
+
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      if (!is_numeric($mid)) {
+        throw new \Exception('Invalid bot id!', self::ERROR_CODE_BASE + 3);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
+        $em->remove($bot);
+        $em->flush();
+
+        return new JsonResponse(array('status' => 'ok'));
+
+      } else {
+        return $this->err404('Bot not found!');
+     }
+    } catch (\Exception $e) {
+      return $this->err500($e);
+    }
+
   }
 
   public function mowLawnAction(Request $request) {

@@ -1,5 +1,6 @@
 controller_actions:
   actions:
+# bot create
     -
       test_id: bot_create/0
       method: POST
@@ -177,6 +178,7 @@ controller_actions:
         content_decoded:
           error_code: 107
           message: Bad command of bot, bots collision detected!
+# bot get
     -
       test_id: bot_get/0
       method: GET
@@ -236,32 +238,7 @@ controller_actions:
         status_code: 404
         content_decoded:
           message: Bot not found!
-#    -
-#      test_id: bot_get/5
-#      method: GET
-#      uri: /lawn/{id}/mower/{mid}
-#      parameters:
-#        id: 1
-#        mid: 1
-#      checks:
-#        content_decoded:
-#          x: 3
-#          y: 3
-#          heading: S
-#          command: LRMMRLMR
-#    -
-#      test_id: bot_get/6
-#      method: GET
-#      uri: /lawn/{id}/mower/{mid}
-#      parameters:
-#        id: 1
-#        mid: 1
-#      checks:
-#        content_decoded:
-#          x: 3
-#          y: 3
-#          heading: S
-#          command: LRMMRLMR
+# bot update
     -
       test_id: bot_update/0
       method: PUT
@@ -281,6 +258,133 @@ controller_actions:
           heading: N
           command: RLMLLRM
     -
+      test_id: bot_update/1
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/2
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/3
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/4
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/5
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/6
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+    -
+      test_id: bot_update/7
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: RLMLLRM
+      checks:
+        content_decoded:
+          x: 2
+          y: 4
+          heading: N
+          command: RLMLLRM
+#bot delete
+    -
       test_id: bot_delete/0
       method: DELETE
       uri: /lawn/{id}/mower/{mid}
@@ -290,4 +394,49 @@ controller_actions:
       checks:
         content_decoded:
           status: ok
-
+    -
+      test_id: bot_delete/1
+      method: DELETE
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: invalid
+        mid: 1
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 902
+          message: Invalid lawn id!
+    -
+      test_id: bot_delete/2
+      method: DELETE
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 903
+          message: Invalid bot id!
+    -
+      test_id: bot_delete/3
+      method: DELETE
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 999
+        mid: 1
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Bot not found!
+    -
+      test_id: bot_delete/4
+      method: DELETE
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 999
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Bot not found!
