@@ -27,7 +27,6 @@ class Bot
     'S' => 'W'
   ];
 
-  private $headings;
   private $sequence = null;
 
   /**

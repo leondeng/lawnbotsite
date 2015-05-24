@@ -42,34 +42,4 @@ trait Accessor
       throw $e;
     }
   }
-
-  /* public function __toArray() {
-    return $this->__toArrayExclude();
-  }
-
-  public function __toArrayIncludeOnly(array $only) {
-    $ret = array ();
-    $refl = new \ReflectionObject($this);
-    foreach ( $refl->getProperties(\ReflectionProperty::IS_PRIVATE) as $reflp ) {
-      $prop = $reflp->getName();
-      if (!in_array($prop, $only)) continue;
-
-      $ret[$prop] = $this->$prop;
-    }
-
-    return $ret;
-  }
-
-  public function __toArrayExclude(array $exclude = array()) {
-    $ret = array ();
-    $refl = new \ReflectionObject($this);
-    foreach ( $refl->getProperties(\ReflectionProperty::IS_PRIVATE) as $reflp ) {
-      $prop = $reflp->getName();
-      if (in_array($prop, $exclude)) continue;
-
-      $ret[$prop] = $this->$prop;
-    }
-
-    return $ret;
-  } */
 }
