@@ -13,16 +13,16 @@ class LawnTest extends EntityTestCase
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Lawn', $lawn);
     $this->em->persist($lawn);
     $this->em->flush();
-    
+
     $lawnFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Lawn')
       ->findOneBy(array (
       'width' => 5,
-      'height' => 5 
+      'height' => 5
     ));
     $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Lawn', $lawnFromDb);
     $this->assertEquals(5, $lawnFromDb->getWidth());
     $this->assertEquals(5, $lawnFromDb->getHeight());
-    
+
     $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $lawnFromDb->getBots());
   }
 
@@ -46,7 +46,7 @@ class LawnTest extends EntityTestCase
   public function testToString() {
     $lawn = $this->getLawn();
     $this->assertEquals('5 5', (string) $lawn);
-    
+
     $lawn->setWidth(7);
     $lawn->setHeight(14);
     $this->assertEquals('7 14', (string) $lawn);
@@ -58,18 +58,18 @@ class LawnTest extends EntityTestCase
     $botB = $this->getBotB();
     $lawn->addBot($botA);
     $lawn->addBot($botB);
-    
+
     $this->em->persist($lawn);
     // $this->em->persist($botA);
     // $this->em->persist($botB);
     $this->em->flush();
-    
+
     $lawnFromDb = $this->em->getRepository('Fan\LawnBotBundle\Entity\Lawn')
       ->findOneBy(array (
       'width' => 5,
-      'height' => 5 
+      'height' => 5
     ));
-    
+
     $this->assertEquals(2, count($lawnFromDb->getBots()));
     foreach ( $lawnFromDb->getBots() as $bot ) {
       $this->assertInstanceOf('Fan\LawnBotBundle\Entity\Bot', $bot);
@@ -83,7 +83,7 @@ class LawnTest extends EntityTestCase
     $botB = $this->getBotB();
     $lawn->addBot($botB);
     $lawn->removeBot($botA);
-    
+
     $bots = $lawn->getBots();
     $this->assertEquals(1, count($bots));
     $botOnLawn = $bots->first();
@@ -122,9 +122,34 @@ class LawnTest extends EntityTestCase
     $lawn = $this->getLawn();
     $botA = $this->getBotA();
     $lawn->addBot($botA);
-    
+
     $botC = $this->getBotC();
     $lawn->addBot($botC);
+  }
+
+  public function testMowMe() {
+    $lawn = $this->getLawn();
+    $botA = $this->getBotA();
+    $botB = $this->getBotB();
+    $lawn->addBot($botA);
+    $lawn->addBot($botB);
+
+    $lawn->mowMe();
+
+    $bots = $lawn->getBots();
+    $this->assertEquals(array(
+      'x' => 1,
+      'y' => 3,
+      'heading' => 'N'
+    ), $bots[0]->getCurrentPosition());
+
+    $this->assertEquals(array(
+      'x' => 5,
+      'y' => 1,
+      'heading' => 'E'
+    ), $bots[1]->getCurrentPosition());
+
+
   }
 
   public function getLawn() {

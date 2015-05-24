@@ -1,5 +1,6 @@
 controller_actions:
   actions:
+# lawn create
     -
       test_id: lawn_create/0
       method: POST
@@ -48,6 +49,7 @@ controller_actions:
         content_decoded:
           error_code: 103
           message: Invalid height!
+# lawn get
     -
       test_id: lawn_get/0
       method: GET
@@ -59,6 +61,20 @@ controller_actions:
           id: 1
           width: 5
           height: 5
+          bots:
+            -
+              id: 1
+              x: 1
+              y: 3
+              heading: N
+              command: LMLMLMLMM
+            -
+              id: 2
+              x: 5
+              y: 1
+              heading: E
+              command: MMRMMRMRRM
+
     -
       test_id: lawn_get/1
       method: GET
@@ -80,6 +96,7 @@ controller_actions:
         content_decoded:
           error_code: 902
           message: Invalid lawn id!
+# lawn delete
     -
       test_id: lawn_delete/0
       method: DELETE
@@ -110,6 +127,7 @@ controller_actions:
         content_decoded:
           error_code: 902
           message: Invalid lawn id!
+# lawn execute
     -
       test_id: lawn_execute/0
       method: POST
@@ -118,6 +136,7 @@ controller_actions:
         id: 1
       checks:
         content_decoded:
+          id: 1
           width: 5
           height: 5
           bots:
@@ -125,11 +144,32 @@ controller_actions:
               id: 1
               x: 1
               y: 3
-              heading: E
-              command: XXXXXXX
+              heading: N
+              command: LMLMLMLMM
             -
               id: 2
-              x: 1
-              y: 3
+              x: 5
+              y: 1
               heading: E
-              command: XXXXXXX
+              command: MMRMMRMRRM
+    -
+      test_id: lawn_execute/1
+      method: POST
+      uri: /lawn/{id}/execute
+      parameters:
+        id: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 902
+          message: Invalid lawn id!
+    -
+      test_id: lawn_execute/2
+      method: POST
+      uri: /lawn/{id}/execute
+      parameters:
+        id: 999
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Lawn not found!

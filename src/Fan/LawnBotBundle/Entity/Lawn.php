@@ -200,6 +200,17 @@ class Lawn
     return false;
   }
 
+  public function mowMe() {
+    foreach ($this->bots as $bot) {
+      $seq = $bot->getSequence();
+      $position = end($seq);
+
+      $bot->setX($position['x']);
+      $bot->setY($position['y']);
+      $bot->setHeading($position['heading']);
+    }
+  }
+
   public function __toString() {
     return sprintf('%d %d', $this->width, $this->height);
   }

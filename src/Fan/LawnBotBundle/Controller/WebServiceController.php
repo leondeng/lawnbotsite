@@ -202,7 +202,25 @@ class WebServiceController extends Controller implements TransactionWrapControll
   }
 
   public function mowLawnAction(Request $request) {
-    return $this->err404('Not implemented!');
+  try {
+      $id = $request->request->get('id');
+
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
+        $lawn->mowMe(); //print_r($lawn->__toArrayIncludeOnly(array('id', 'width', 'height', 'bots'))); die();
+        $this->saveEntity($lawn);
+
+        return new JsonResponse($lawn->__toArray());
+      } else {
+        return $this->err404('Lawn not found!');
+     }
+    } catch (\Exception $e) {
+      return $this->err500($e);
+    }
   }
 
   private function err400($msg) {

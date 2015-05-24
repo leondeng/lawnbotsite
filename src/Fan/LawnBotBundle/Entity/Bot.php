@@ -282,6 +282,14 @@ class Bot
     return sprintf('%d %d %s', $position['x'], $position['y'], $position['heading']);
   }
 
+  public function getCurrentPosition() {
+    return array(
+      'x' => $this->x,
+      'y' => $this->y,
+      'heading' => $this->heading
+    );
+  }
+
   public function reset() {
     $this->x = null;
     $this->y = null;

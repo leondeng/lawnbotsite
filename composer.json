@@ -47,6 +47,12 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
+        "dev:clear-cache": [
+            "php app/console -e=dev cache:clear",
+            "php app/console -e=dev doctrine:cache:clear-metadata",
+            "php app/console -e=dev doctrine:cache:clear-query",
+            "php app/console -e=dev doctrine:cache:clear-result"
+        ],
         "dev:rebuild-db": [
             "mysql -e 'CREATE DATABASE IF NOT EXISTS lawnbotsite_dev;' -uroot",
             "php app/console -e=dev doctrine:schema:drop --force",
