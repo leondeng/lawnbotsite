@@ -111,7 +111,7 @@ abstract class ControllerTestCase extends WebTestCase
 
       // organise checks
       foreach (array(
-        'http_code',
+        'status_code',
         'header_regexp',
         'content_type',
         'content_regexp',
