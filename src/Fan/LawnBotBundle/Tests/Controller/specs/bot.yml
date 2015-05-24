@@ -178,6 +178,37 @@ controller_actions:
         content_decoded:
           error_code: 107
           message: Bad command of bot, bots collision detected!
+    -
+      test_id: bot_create/11
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: invalid
+      content:
+        x: 5
+        y: 0
+        heading: N
+        command: MMMLMM
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 902
+          message: Invalid lawn id!
+    -
+      test_id: bot_create/12
+      method: POST
+      uri: /lawn/{id}/mower
+      parameters:
+        id: 999
+      content:
+        x: 5
+        y: 0
+        heading: N
+        command: MMMLMM
+      checks:
+        status_code: 404
+        content_decoded:
+          message: Lawn not found!
 # bot get
     -
       test_id: bot_get/0
@@ -262,7 +293,7 @@ controller_actions:
       method: PUT
       uri: /lawn/{id}/mower/{mid}
       parameters:
-        id: 1
+        id: invalid
         mid: 1
       content:
         x: 2
@@ -270,35 +301,33 @@ controller_actions:
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 500
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          error_code: 902
+          message: Invalid lawn id!
     -
       test_id: bot_update/2
       method: PUT
       uri: /lawn/{id}/mower/{mid}
       parameters:
         id: 1
-        mid: 1
+        mid: invalid
       content:
         x: 2
         y: 4
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 500
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          error_code: 903
+          message: Invalid bot id!
     -
       test_id: bot_update/3
       method: PUT
       uri: /lawn/{id}/mower/{mid}
       parameters:
-        id: 1
+        id: 999
         mid: 1
       content:
         x: 2
@@ -306,29 +335,25 @@ controller_actions:
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 404
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          message: Bot not found!
     -
       test_id: bot_update/4
       method: PUT
       uri: /lawn/{id}/mower/{mid}
       parameters:
         id: 1
-        mid: 1
+        mid: 999
       content:
         x: 2
         y: 4
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 404
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          message: Bot not found!
     -
       test_id: bot_update/5
       method: PUT
@@ -337,16 +362,15 @@ controller_actions:
         id: 1
         mid: 1
       content:
-        x: 2
-        y: 4
+        x: 8
+        y: 3
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 500
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          error_code: 104
+          message: Invalid x postion of bot, out of width of lawn!
     -
       test_id: bot_update/6
       method: PUT
@@ -356,15 +380,14 @@ controller_actions:
         mid: 1
       content:
         x: 2
-        y: 4
+        y: 9
         heading: N
         command: RLMLLRM
       checks:
+        status_code: 500
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          error_code: 105
+          message: Invalid y postion of bot, out of height of lawn!
     -
       test_id: bot_update/7
       method: PUT
@@ -375,14 +398,82 @@ controller_actions:
       content:
         x: 2
         y: 4
-        heading: N
+        heading: Invalid
         command: RLMLLRM
       checks:
+        status_code: 500
         content_decoded:
-          x: 2
-          y: 4
-          heading: N
-          command: RLMLLRM
+          error_code: 204
+          message: Invalid heading!
+    -
+      test_id: bot_update/8
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: S
+        command: invalid
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 205
+          message: Invalid command string!
+    -
+      test_id: bot_update/9
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 2
+        y: 4
+        heading: N
+        command: MLMMMRM
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 106
+          message: Bad command of bot, overstep of boundary detected!
+    -
+      test_id: bot_update/10
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 3
+        y: 1
+        heading: N
+        command: MRMMLMML
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 107
+          message: Bad command of bot, bots collision detected!
+    -
+      test_id: bot_update/11
+      method: PUT
+      uri: /lawn/{id}/mower/{mid}
+      parameters:
+        id: 1
+        mid: 1
+      content:
+        x: 3
+        y: 3
+        heading: W
+        command: RLMLLRM
+      checks:
+        status_code: 500
+        content_decoded:
+          error_code: 123
+          message: Adding bot to non-empty location!
+
 #bot delete
     -
       test_id: bot_delete/0

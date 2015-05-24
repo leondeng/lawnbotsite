@@ -43,7 +43,7 @@ trait Accessor
     }
   }
 
-  public function __toArray() {
+  /* public function __toArray() {
     return $this->__toArrayExclude();
   }
 
@@ -71,5 +71,5 @@ trait Accessor
     }
 
     return $ret;
-  }
+  } */
 }

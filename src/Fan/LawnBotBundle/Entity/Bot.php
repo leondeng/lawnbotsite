@@ -306,6 +306,13 @@ class Bot
     );
   }
 
+  public function update(array $data) {
+    $this->setX($data['x']);
+    $this->setY($data['y']);
+    $this->setHeading($data['heading']);
+    $this->setCommand($data['command']);
+  }
+
   public function reset() {
     $this->x = null;
     $this->y = null;

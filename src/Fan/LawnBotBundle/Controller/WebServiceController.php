@@ -35,9 +35,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
       $lawn = Lawn::create($size);
       $this->saveEntity($lawn);
 
-      $data = $lawn->__toArrayExclude(array('bots'));
-
-      return new JsonResponse($data);
+      return $this->responseJson($this->serialize($lawn));
     } catch ( \Exception $e ) {
       return $this->err500($e);
     }
@@ -53,10 +51,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
-        $serializer = $this->container->get('jms_serializer');
-        $data = $serializer->serialize($lawn, 'json');
-
-        return $this->responseJson($data);
+        return $this->responseJson($this->serialize($lawn));
       } else {
         return $this->err404('Lawn not found!');
      }
@@ -108,7 +103,7 @@ class WebServiceController extends Controller implements TransactionWrapControll
         $lawn->addBot($bot);
         $this->saveEntity($lawn);
 
-        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
+        return $this->responseJson($this->serialize($bot));
       } else {
         return $this->err404('Lawn not found!');
       }
@@ -131,8 +126,8 @@ class WebServiceController extends Controller implements TransactionWrapControll
       }
 
       $em = $this->getDoctrine()->getManager();
-      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
-        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findOneBy(array('lawn' => $id, 'id' => $mid))) {
+        return $this->responseJson($this->serialize($bot));
       } else {
         return $this->err404('Bot not found!');
      }
@@ -143,8 +138,8 @@ class WebServiceController extends Controller implements TransactionWrapControll
 
   public function updateBotAction(Request $request) {
     try {
-      $id = $request->get('id');
-      $mid = $request->get('mid');
+      $id = $request->request->get('id');
+      $mid = $request->request->get('mid');
 
       if (!is_numeric($id)) {
         throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
@@ -155,20 +150,18 @@ class WebServiceController extends Controller implements TransactionWrapControll
       }
 
       $data = json_decode($request->getContent(), true);
-      if (count($data) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
-        throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
-      }
 
       $em = $this->getDoctrine()->getManager();
-      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
-        $bot->setX($data['x']);
-        $bot->setY($data['y']);
-        $bot->setHeading($data['heading']);
-        $bot->setCommand($data['command']);
-        $this->saveEntity($bot);
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findOneBy(array('lawn' => $id, 'id' => $mid))) {
+        $lawn = $bot->getLawn();
 
-        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
-      } else {
+        if ($lawn->updateBot($bot, $data)) {
+          $this->saveEntity($bot);
+          return $this->responseJson($this->serialize($bot));
+        } else {
+          return $this->err400('Update bot failed! Reason unknown.');
+        }
+     } else {
         return $this->err404('Bot not found!');
       }
     } catch ( \Exception $e ) {
@@ -190,12 +183,11 @@ class WebServiceController extends Controller implements TransactionWrapControll
       }
 
       $em = $this->getDoctrine()->getManager();
-      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findOneBy(array('lawn' => $id, 'id' => $mid))) {
         $em->remove($bot);
         $em->flush();
 
         return new JsonResponse(array('status' => 'ok'));
-
       } else {
         return $this->err404('Bot not found!');
      }
@@ -218,16 +210,18 @@ class WebServiceController extends Controller implements TransactionWrapControll
         $lawn->mowMe();
         $this->saveEntity($lawn);
 
-        $serializer = $this->container->get('jms_serializer');
-        $data = $serializer->serialize($lawn, 'json');
-
-        return $this->responseJson($data);
+        return $this->responseJson($this->serialize($lawn));
       } else {
         return $this->err404('Lawn not found!');
      }
     } catch (\Exception $e) {
       return $this->err500($e);
     }
+  }
+
+  private function serialize($object) {
+    $serializer = $this->container->get('jms_serializer');
+    return $serializer->serialize($object, 'json');
   }
 
   private function responseJson($data) {

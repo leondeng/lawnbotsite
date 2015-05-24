@@ -136,7 +136,19 @@ class Lawn
     $this->bots->removeElement($bot);
   }
 
-  private function validateBot(Bot $bot) {
+  public function updateBot(Bot $bot, array $data) {
+    if (count($data) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
+      throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
+    }
+
+    $bot->update($data);
+
+    if ($this->validateBot($bot)) return true;
+
+    return false;
+  }
+
+  public function validateBot(Bot $bot) {
     if ($bot->getX() > $this->width) {
       throw new \Exception('Invalid x postion of bot, out of width of lawn!', self::ERROR_CODE_BASE + 4);
     }
@@ -160,11 +172,13 @@ class Lawn
     return true;
   }
 
-  private function detectPosition(Bot $newBot) {
+  private function detectPosition(Bot $pendingBot) {
     if (! count($this->bots)) return false;
 
     foreach ($this->bots as $bot) {
-      if ($bot->getX() == $newBot->getX() && $bot->getY() == $newBot->getY()) {
+      if ($pendingBot == $bot) continue;
+
+      if ($bot->getX() == $pendingBot->getX() && $bot->getY() == $pendingBot->getY()) {
         return true;
       }
     }
@@ -184,14 +198,16 @@ class Lawn
     return false;
   }
 
-  private function detectCollision(Bot $newBot) {
+  private function detectCollision(Bot $pendingBot) {
     if (! count($this->bots)) return false;
 
-    $newSeq = $newBot->getSequence();
+    $pendingSeq = $pendingBot->getSequence();
     foreach ( $this->bots as $bot ) {
+      if ($pendingBot == $bot) continue;
+
       $seq = $bot->getSequence();
       foreach ( $seq as $time => $position ) {
-        if (isset($newSeq[$time]) && $newSeq[$time]['x'] == $position['x'] && $newSeq[$time]['y'] == $position['y']) {
+        if (isset($pendingSeq[$time]) && $pendingSeq[$time]['x'] == $position['x'] && $pendingSeq[$time]['y'] == $position['y']) {
           return true;
         }
       }
