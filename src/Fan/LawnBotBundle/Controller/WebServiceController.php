@@ -116,7 +116,27 @@ class WebServiceController extends Controller implements TransactionWrapControll
   }
 
   public function getBotAction(Request $request) {
-    return $this->err404('Not implemented!');
+    try {
+      $id = $request->get('id');
+      $mid = $request->get('mid');
+
+      if (!is_numeric($id)) {
+        throw new \Exception('Invalid lawn id!', self::ERROR_CODE_BASE + 2);
+      }
+
+      if (!is_numeric($mid)) {
+        throw new \Exception('Invalid bot id!', self::ERROR_CODE_BASE + 3);
+      }
+
+      $em = $this->getDoctrine()->getManager();
+      if ($bot = $em->getRepository('Fan\LawnBotBundle\Entity\Bot')->findBotOnLawn($id, $mid)) {
+        return new JsonResponse($bot->__toArrayExclude(array('lawn')));
+      } else {
+        return $this->err404('Bot not found!');
+     }
+    } catch (\Exception $e) {
+      return $this->err500($e);
+    }
   }
 
   public function updateBotAction(Request $request) {
