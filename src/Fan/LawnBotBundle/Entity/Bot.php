@@ -5,6 +5,7 @@ namespace Fan\LawnBotBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Bot
@@ -44,7 +45,10 @@ class Bot
   /**
    *
    * @var integer @ORM\Column(name="x", type="integer", length=10)
-   *
+   * @Assert\Type(
+   *   type="numeric",
+   *   message="Invalid x position!"
+   * )
    * @Expose
    */
   private $x;
@@ -52,7 +56,10 @@ class Bot
   /**
    *
    * @var integer @ORM\Column(name="y", type="integer", length=10)
-   *
+   * @Assert\Type(
+   *   type="numeric",
+   *   message="Invalid y position!"
+   * )
    * @Expose
    */
   private $y;
@@ -60,7 +67,10 @@ class Bot
   /**
    *
    * @var char @ORM\Column(name="heading", type="string", length=1)
-   *
+   * @Assert\Choice(
+   *   callback="getHeadings",
+   *   message="Invalid heading!"
+   * )
    * @Expose
    */
   private $heading;
@@ -68,7 +78,10 @@ class Bot
   /**
    *
    * @var string @ORM\Column(name="command", type="string", length=100)
-   *
+   * @Assert\Regex(
+   *   pattern="/^[LRM]+$/",
+   *   message="Invalid command string!"
+   * )
    * @Expose
    */
   private $command;
@@ -80,26 +93,22 @@ class Bot
    */
   private $lawn;
 
-  public static function create($position, $command) {
-    $bot = new Bot($position);
-    $bot->setCommand($command);
-
-    return $bot;
+  public static function create(array $position) {
+    return new Bot($position);
   }
 
-  public function __construct($position) {
-    $params = explode(' ', $position);
-    if (count($params) !== 3) {
-      throw new \InvalidArgumentException('Invalid position string!', self::ERROR_CODE_BASE + 1);
+  public function __construct(array $position) {
+    if (count($position) !== 3) {
+      throw new \InvalidArgumentException('Invalid position!', self::ERROR_CODE_BASE + 1);
     }
 
-    $this->initialize($params);
+    $this->setX(array_shift($position));
+    $this->setY(array_shift($position));
+    $this->setHeading(array_shift($position));
   }
 
-  private function initialize(array $params) {
-    $this->setX($params[0]);
-    $this->setY($params[1]);
-    $this->setHeading($params[2]);
+  public static function getHeadings() {
+    return self::HEADINGS;
   }
 
   /**
@@ -118,10 +127,6 @@ class Bot
    * @return Bot
    */
   public function setX($x) {
-    if (! is_numeric($x)) {
-      throw new \InvalidArgumentException('Invalid x position!', self::ERROR_CODE_BASE + 2);
-    }
-
     $this->x = $x;
 
     return $this;
@@ -143,10 +148,6 @@ class Bot
    * @return Bot
    */
   public function setY($y) {
-    if (! is_numeric($y)) {
-      throw new \InvalidArgumentException('Invalid y position!', self::ERROR_CODE_BASE + 3);
-    }
-
     $this->y = $y;
 
     return $this;
@@ -168,10 +169,6 @@ class Bot
    * @return Bot
    */
   public function setHeading($heading) {
-    if (! in_array($heading, self::HEADINGS)) {
-      throw new \InvalidArgumentException('Invalid heading!', self::ERROR_CODE_BASE + 4);
-    }
-
     $this->heading = $heading;
 
     return $this;
@@ -193,10 +190,6 @@ class Bot
    * @return Bot
    */
   public function setCommand($command) {
-    if (! preg_match('/^[LRM]+$/', $command)) {
-      throw new \InvalidArgumentException('Invalid command string!', self::ERROR_CODE_BASE + 5);
-    }
-
     $this->command = $command;
 
     return $this;
