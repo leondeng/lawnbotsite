@@ -74,8 +74,10 @@ class MowPlanner
 
     // TODO:if positions already in plans, get again
 
-    foreach ($positions as $coord => $heading) {
-      $this->bots[] = Bot::create(sprintf('%s %s', $coord, $heading), 'M');
+    foreach ($positions as $position) {
+      $bot = Bot::create($position);
+      $bot->setCommand('M');
+      $this->bots[] = $bot;
     }
 
     return $this;
@@ -91,9 +93,9 @@ class MowPlanner
       $y = mt_rand(0, $this->height);
       $heading = self::$headings[mt_rand(0, 3)];
 
-      $pos_str = sprintf('%d %d', $x, $y);
-      if (!isset($positions[$pos_str])) {
-        $positions[$pos_str] = $heading;
+      $coord = sprintf('%d-%d', $x, $y);
+      if (!isset($positions[$coord])) {
+        $positions[$coord] = array($x, $y, $heading);
       }
     } while (count($positions) < $this->botsNum);
 
@@ -101,8 +103,12 @@ class MowPlanner
   }
 
   public function generateInstructions() {
-    $this->findPlans();
-    $plans = $this->topPlans();
+    try {
+      $this->findPlans();
+      $plans = $this->topPlans();
+    } catch (\Exception $e) {
+      return false;
+    }
 
     return $plans;
   }

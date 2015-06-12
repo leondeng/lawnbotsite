@@ -142,6 +142,7 @@ class Lawn
     }
 
     $bot->update($data);
+    Bot::validateBotData($bot);
 
     if ($this->validateBot($bot)) return true;
 

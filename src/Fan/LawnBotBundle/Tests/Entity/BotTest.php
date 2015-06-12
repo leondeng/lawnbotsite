@@ -3,6 +3,7 @@
 namespace Fan\LawnBotBundle\Tests\Entity;
 
 use Fan\LawnBotBundle\Entity\Bot;
+use Symfony\Component\Validator\Validation;
 
 class BotTest extends EntityTestCase
 {
@@ -29,15 +30,24 @@ class BotTest extends EntityTestCase
     $bot = Bot::create(array('11N'));
   }
 
-  public function testCreateInvalidCommand() {
-    $this->setExpectedException('InvalidArgumentException', 'Invalid command string!');
+  public function testInvalidCommand() {
     $bot = Bot::create(array(2, 3, 'S'));
     $bot->setCommand('sjfewpnfe21');
+
+    $validator = $this->getValidator();
+    $errors = $validator->validate($bot);
+    $this->assertTrue(count($errors) > 0);
+    $this->assertEquals('Invalid command string!', $errors[0]->getMessage());
   }
 
-  public function testCreateEmptyCommand() {
-    //$this->setExpectedException('InvalidArgumentException', 'Invalid command string!');
-    $bot = Bot::create('2 3 S', '');
+  public function testEmptyCommand() {
+    $bot = Bot::create(array(2, 3, 'S'));
+    $bot->setCommand('');
+
+    $validator = $this->getValidator();
+    $errors = $validator->validate($bot);
+    $this->assertTrue(count($errors) > 0);
+    $this->assertEquals('This value should not be blank.', $errors[0]->getMessage());
   }
 
   public function testUnknowProperty() {
@@ -47,21 +57,33 @@ class BotTest extends EntityTestCase
   }
 
   public function testCreateInvalidXPostion() {
-    $this->setExpectedException('InvalidArgumentException', 'Invalid x position!');
     $bot = $this->getBot();
     $bot->setX('x');
+
+    $validator = $this->getValidator();
+    $errors = $validator->validate($bot);
+    $this->assertTrue(count($errors) > 0);
+    $this->assertEquals('Invalid x position!', $errors[0]->getMessage());
   }
 
-  public function testCreateInvalidPostion() {
-    $this->setExpectedException('InvalidArgumentException', 'Invalid y position!');
+  public function testCreateInvalidYPostion() {
     $bot = $this->getBot();
     $bot->setY('y');
+
+    $validator = $this->getValidator();
+    $errors = $validator->validate($bot);
+    $this->assertTrue(count($errors) > 0);
+    $this->assertEquals('Invalid y position!', $errors[0]->getMessage());
   }
 
   public function testCreateInvalidHeading() {
-    $this->setExpectedException('InvalidArgumentException', 'Invalid heading!');
     $bot = $this->getBot();
     $bot->setHeading('999');
+
+    $validator = $this->getValidator();
+    $errors = $validator->validate($bot);
+    $this->assertTrue(count($errors) > 0);
+    $this->assertEquals('Invalid heading!', $errors[0]->getMessage());
   }
 
   public function testToString() {
@@ -91,5 +113,9 @@ class BotTest extends EntityTestCase
     $bot->setCommand('LMLMLMLMM');
 
     return $bot;
+  }
+
+  public function getValidator() {
+    return Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
   }
 }

@@ -96,7 +96,7 @@ controller_actions:
       checks:
         status_code: 500
         content_decoded:
-          error_code: 204
+          error_code: 912
           message: Invalid heading!
     -
       test_id: bot_create/6
@@ -112,7 +112,7 @@ controller_actions:
       checks:
         status_code: 500
         content_decoded:
-          error_code: 205
+          error_code: 912
           message: Invalid command string!
     -
       test_id: bot_create/7
@@ -403,7 +403,7 @@ controller_actions:
       checks:
         status_code: 500
         content_decoded:
-          error_code: 204
+          error_code: 202
           message: Invalid heading!
     -
       test_id: bot_update/8
@@ -420,7 +420,7 @@ controller_actions:
       checks:
         status_code: 500
         content_decoded:
-          error_code: 205
+          error_code: 202
           message: Invalid command string!
     -
       test_id: bot_update/9

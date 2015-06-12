@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validation;
 
 /**
  * Bot
@@ -82,6 +83,7 @@ class Bot
    *   pattern="/^[LRM]+$/",
    *   message="Invalid command string!"
    * )
+   * @Assert\NotBlank
    * @Expose
    */
   private $command;
@@ -94,7 +96,11 @@ class Bot
   private $lawn;
 
   public static function create(array $position) {
-    return new Bot($position);
+    $bot = new Bot($position);
+    //$bot->setcommand('M');
+    //self::validateBot($bot);
+
+    return $bot;
   }
 
   public function __construct(array $position) {
@@ -109,6 +115,14 @@ class Bot
 
   public static function getHeadings() {
     return self::HEADINGS;
+  }
+
+  public static function validateBotData(Bot $bot) {
+    $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+    $errors = $validator->validate($bot);
+    if (count($errors) > 0) {
+      throw new \Exception($errors[0]->getMessage(), self::ERROR_CODE_BASE + 2);
+    }
   }
 
   /**
@@ -305,6 +319,7 @@ class Bot
     $this->setY($data['y']);
     $this->setHeading($data['heading']);
     $this->setCommand($data['command']);
+    //self::validateBotData($this);
   }
 
   public function reset() {

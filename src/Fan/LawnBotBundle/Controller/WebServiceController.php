@@ -93,12 +93,18 @@ class WebServiceController extends Controller implements TransactionWrapControll
       $em = $this->getDoctrine()->getManager();
       if ($lawn = $em->getRepository('Fan\LawnBotBundle\Entity\Lawn')->find($id)) {
         $data = json_decode($request->getContent(), true);
-        if (count($data) != 4 || !isset($data['x']) || !isset($data['y']) || !isset($data['heading']) || !isset($data['command'])) {
+        if (!(count($data) == 4 && isset($data['x']) && isset($data['y']) && isset($data['heading']) && isset($data['command']))) {
           throw new \Exception('Invalid bot data!', self::ERROR_CODE_BASE + 11);
         }
-        $position = sprintf('%s %s %s', $data['x'], $data['y'], $data['heading']);
-        $command = $data['command'];
-        $bot = Bot::create($position, $command);
+        $bot = Bot::create(array_slice($data, 0, 3));
+        $bot->setCommand($data['command']);
+
+        $validator = $this->get('validator');
+        $errors = $validator->validate($bot);
+        if (count($errors) > 0) {
+          $error = $errors->get(0); // we only feed back the first validation error here
+          throw new \Exception($error->getMessage(), self::ERROR_CODE_BASE + 12);
+        }
 
         $lawn->addBot($bot);
         $this->saveEntity($lawn);
