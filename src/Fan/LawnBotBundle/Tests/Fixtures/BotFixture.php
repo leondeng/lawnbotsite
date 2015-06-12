@@ -27,10 +27,14 @@ private $referenceRepository;
   }
 
   public function getBotA() {
-    return Bot::create('1 2 N', 'LMLMLMLMM');
+    $bot = Bot::create(array(1, 2, 'N'));
+    $bot->setCommand('LMLMLMLMM');
+    return $bot;
   }
 
   public function getBotB() {
-    return Bot::create('3 3 E', 'MMRMMRMRRM');
+    $bot = Bot::create(array(3, 3, 'E'));
+    $bot->setCommand('MMRMMRMRRM');
+    return $bot;
   }
 }
