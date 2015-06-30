@@ -8,7 +8,7 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.6.*",
+        "symfony/symfony": "^2.7",
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.2",
@@ -23,9 +23,16 @@
         "jms/serializer-bundle": "^0.13.0"
     },
     "require-dev": {
+        "leondeng/testube": "dev-master",
         "sensio/generator-bundle": "~2.3",
-        "phpunit/phpunit": "4.6.*"
+        "phpunit/phpunit": "^4.7"
     },
+    "repositories": [
+        {
+            "url": "git@github.com:leondeng/testube.git",
+            "type": "git"
+        }
+    ],
     "scripts": {
         "post-root-package-install": [
             "SymfonyStandard\\Composer::hookRootPackageInstall"

@@ -2,6 +2,8 @@
 
 namespace Fan\LawnBotBundle\Tests\Controller;
 
+use LeonDeng\TesTube\Symfony\ControllerTestCase;
+
 class WebServiceControllerTest extends ControllerTestCase
 {
 

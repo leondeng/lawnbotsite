@@ -10,13 +10,9 @@ use Symfony\Component\HttpFoundation\Symfony\Component\HttpFoundation;
 use Fan\LawnBotBundle\Entity\Lawn;
 use Fan\LawnBotBundle\Entity\Bot;
 
-class WebServiceController extends Controller implements TransactionWrapController
+class WebServiceController extends Controller
 {
   const ERROR_CODE_BASE = 900;
-
-  public function needsRollback() {
-    return 'test' == $this->container->get( 'kernel' )->getEnvironment();
-  }
 
   private function saveEntity($object) {
     $this->getDoctrine()->getManager()->persist($object);
